@@ -31,7 +31,7 @@ This does **not** mean Arabic justification is unsolved. Microsoft Word and its 
 
 ### Justification is a line-fitting system
 
-Full justification makes each line occupy a target measure. Latin typography often achieves this mostly by changing word spaces, sometimes assisted by hyphenation, glyph expansion, or paragraph-wide line breaking. Arabic offers more possibilities because it is cursive and many styles permit controlled changes to connections and letterforms.
+Full justification makes each line occupy a target measure. Latin typography often achieves this mostly by changing word spaces, sometimes assisted by hyphenation, glyph expansion, or paragraph-wide line breaking. Arabic offers more possibilities because it is cursive and many styles permit controlled changes to connections and letterforms. Contemporary Arabic prose also generally does not break words across lines, so the Latin escape hatch of hyphenation is unavailable; historical Kufic practice and modern Uyghur orthography are exceptions rather than the rule.
 
 Calling the whole process “kashida insertion” hides most of the formatter's work. A useful system must decide:
 
@@ -58,7 +58,7 @@ Tatweel is useful. It can express an intentional extender, carry combining marks
 
 A program can use Unicode joining properties to determine whether two clusters connect. That answers a structural question: *could* an extender be inserted without crossing a non-joining boundary? It does not answer the typographic question: *should* this connection be elongated in this word, font, language, and style?
 
-Arabic-script traditions differ substantially. Naskh, Nastaliq, Ruqʿah, Persian, Urdu, Kurdish, Qurʾanic, display, and newspaper settings cannot all use one universal ranking. A shaping engine can identify safe boundaries; a font can provide alternate forms; but a formatter still needs language- and style-sensitive policy.
+Arabic-script traditions differ substantially. Naskh, Nastaliq, Ruqʿah, Persian, Urdu, Kurdish, Qurʾanic, display, and newspaper settings cannot all use one universal ranking. [Khaled Hosny](https://aliftype.com/blog/introducing-raqim-kashida/english) cites Ruqʿah as permitting no elongation and Diwani as generally limiting it to sīn, while sources and calligraphers can disagree even within a style. A shaping engine can identify safe boundaries; a font can provide alternate forms; but a formatter still needs language- and style-sensitive policy.
 
 ### Elongation should normally be layout, not source text
 
@@ -220,10 +220,19 @@ Arabic justification has a substantial technical literature. A few especially re
 - Mohamed Jamal Eddine Benatia, Mohamed Elyaakoubi, and Azzeddine Lazrek's work on Arabic text justification in TeX-oriented publishing;
 - Aqil M. Azmi and Abeer Alsaiari's [“An Algorithm to Justify Arabic Text”](http://ecsjournal.org/Archive/Volume37/Issue5/6.pdf), which combines alternate-width ligatures with prioritized kashida application;
 - Andreas Hallberg's [stretchable-kashida LaTeX experiment](https://github.com/andreasmhallberg/kashida-justification);
-- [raqim-kashida](https://github.com/aliftype/raqim-kashida), which focuses on finding prioritized insertion opportunities while leaving shaping and fitting to another layer;
 - the Rust [`kashida` crate](https://crates.io/crates/kashida), one of several attempts to package Arabic elongation logic for reuse.
 
 These projects differ in goals and typographic sophistication, but collectively they show that the problem has an active engineering tradition. Browser engines do not need to invent every concept from first principles.
+
+### Raqim Kashida
+
+Khaled Hosny's [account of Raqim Kashida](https://aliftype.com/blog/introducing-raqim-kashida/english) traces the library to his earlier work refining LibreOffice's kashida implementation. LibreOffice applied one general rule set to every Arabic font, based on Microsoft's old Internet Explorer guidance. Hosny argues that those “simple” rules reflect the constraints of newspaper-composition machinery and work poorly for classical fonts with richer ligatures and contextual forms.
+
+Hosny first built a Python library and then [`kashida-js`](https://github.com/aliftype/kashida-js) around the simple rules. After experimenting with Naskh-specific rules, he replaced hard-coded policies with Raqim's small pattern language, loosely inspired by Knuth–Liang hyphenation patterns. A pattern marks permissible insertion points and assigns priorities; the consumer remains responsible for shaping, choosing among points, and fitting the line.
+
+Raqim currently includes four pattern sets: Simple, Naskh, Nastaliq, and Syriac. Nastaliq demonstrates the system's extensibility by importing Naskh and overriding selected restrictions and priorities. Hosny also proposes that fonts could eventually carry their own patterns, perhaps in a custom table or an extension of OpenType `JSTF`, so opportunity data can match the design of the active font.
+
+`ar-justify` ports Raqim 0.2.5's analyzer and its three Arabic pattern sets to JavaScript. It adds the browser-facing fitting, measurement, and source-preserving rendering layer that Raqim deliberately leaves to consumers.
 
 ## The Web: early support, standardization, and retreat
 
@@ -422,7 +431,6 @@ Such systems prove algorithms and font technologies, but they are not a substitu
 
 The project's 2025 research thread assembled several practical sources:
 
-- Khaled Hosny's [Raqim Kashida](https://github.com/aliftype/raqim-kashida), whose analyzer and pattern sets are ported directly into `ar-justify`;
 - a [Stack Overflow discussion](https://stackoverflow.com/questions/17011065/how-to-get-the-text-justifykashida-css-property-effect-on-to-the-arabic-text) about the vanished CSS behavior;
 - the [old HarfBuzz priority logic](https://cgit.freedesktop.org/harfbuzz.old/tree/src/harfbuzz-arabic.c#n336) and its [Chromium copy](https://github.com/adobe/chromium/blob/master/third_party/harfbuzz/src/harfbuzz-arabic.c);
 - an early [Persian Computing discussion](https://groups.google.com/g/persian-computing/c/s-ftgmBvlF0/m/mhB2V9ELwwYJ);
@@ -431,7 +439,7 @@ The project's 2025 research thread assembled several practical sources:
 - TypoArabic's [historical](https://research.reading.ac.uk/typoarabic/on-arabic-justification-part-1/) and [software](https://research.reading.ac.uk/typoarabic/on-arabic-justification-part-2-software-implementations/) surveys;
 - later experimental packages such as the [`kashida` crate](https://crates.io/crates/kashida).
 
-The implementation that emerged is intentionally modest: Unicode-aware joining analysis, a small priority system, browser measurement, conservative fitting, source-preserving display markers, and an optional adaptive poetry layout. It is evidence that better output is possible today, not a claim to replace native shaping and paragraph layout.
+The first implementation that emerged was intentionally modest: Unicode-aware joining analysis, a small priority system, browser measurement, conservative fitting, source-preserving display markers, and an optional adaptive poetry layout. Its analyzer and rules were later replaced by the Raqim port described above. The result is evidence that better output is possible today, not a claim to replace native shaping and paragraph layout.
 
 ## A compact chronology
 
@@ -455,7 +463,9 @@ The implementation that emerged is intentionally modest: Unicode-aware joining a
 | 2017 | Mushaf Muscat demonstrates dynamic Qurʾanic layout in the browser | High-quality selectable Web Arabic is shown to be possible in a controlled system. |
 | 2019 | TypoArabic surveys major software implementations | The gap between feature labels and typographic quality is documented. |
 | 2020s | HarfBuzz exposes safe-to-insert-tatweel metadata; DigitalKhatt advances parametric shaping | Browser engines gain better building blocks, though not yet an author-facing CSS feature. |
-| 2025–2026 | `ar-justify` is prototyped and packaged | A small DOM experiment demonstrates demand, algorithms, and semantic trade-offs. |
+| 2025 | `ar-justify` is prototyped | A small DOM experiment demonstrates demand, algorithms, and semantic trade-offs. |
+| 2026 | Raqim Kashida publishes extensible, prioritized pattern sets for multiple writing styles | Opportunity selection is separated from shaping and line fitting. |
+| 2026 | `ar-justify` ports Raqim's analyzer and Arabic patterns | Style-specific rules replace the prototype's single priority system. |
 
 ## What native CSS support should mean
 
@@ -757,7 +767,8 @@ A useful browser implementation does not need to reproduce every calligraphic tr
 - [OpenOffice Arabic line-layout source](https://github.com/mirror/openoffice/blob/ac58ea25d9ea6e57181d6047264340cdc75de79a/main/sw/source/core/text/porlay.cxx#L1145).
 - [Mushaf Muscat](https://mushafmuscat.om/).
 - [DigitalKhatt](https://digitalkhatt.org/).
-- [raqim-kashida](https://github.com/aliftype/raqim-kashida).
+- Khaled Hosny, [“The Kashida question”](https://aliftype.com/blog/introducing-raqim-kashida/english).
+- [Raqim Kashida](https://github.com/aliftype/raqim-kashida).
 - [Stretchable kashida experiment for LaTeX](https://github.com/andreasmhallberg/kashida-justification).
 - [Rust `kashida` crate](https://crates.io/crates/kashida).
 
