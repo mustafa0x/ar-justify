@@ -1,0 +1,50 @@
+{
+  "name": "@nuqayah/ar-justify",
+  "version": "0.1.1",
+  "description": "Kashida-based Arabic text and poetry justification for the browser",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mustafa0x/ar-justify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mustafa0x/ar-justify/issues"
+  },
+  "homepage": "https://github.com/mustafa0x/ar-justify#readme",
+  "author": {
+    "name": "Mustafa J"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./style.css": "./style.css"
+  },
+  "files": [
+    "index.js",
+    "kashida.js",
+    "measure.js",
+    "poetry.js",
+    "style.css",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "./style.css"
+  ],
+  "keywords": [
+    "arabic",
+    "kashida",
+    "tatweel",
+    "justification",
+    "typography",
+    "poetry"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

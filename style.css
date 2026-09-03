@@ -1,0 +1,51 @@
+[data-ar-justify-kashida] {
+  all: unset;
+  display: inline;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[data-ar-justify-kashida]::before {
+  content: attr(data-ar-justify-kashida);
+}
+
+[data-ar-poem] [data-sadr],
+[data-ar-poem] [data-ajz] {
+  direction: rtl;
+}
+
+[data-ar-poem][data-layout="paired"] [data-bayt] {
+  display: grid;
+  grid-template-columns:
+    var(--ar-poem-column-width)
+    var(--ar-poem-gutter)
+    var(--ar-poem-column-width);
+  align-items: baseline;
+  justify-content: center;
+  direction: ltr;
+}
+
+[data-ar-poem][data-layout="paired"] [data-sadr] {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+[data-ar-poem][data-layout="paired"] [data-ajz] {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+[data-ar-poem][data-layout="paired"] [data-sadr],
+[data-ar-poem][data-layout="paired"] [data-ajz] {
+  display: block;
+  width: var(--ar-poem-column-width);
+  white-space: nowrap;
+}
+
+[data-ar-poem][data-layout="stacked"] [data-sadr],
+[data-ar-poem][data-layout="stacked"] [data-ajz] {
+  display: block;
+  width: auto;
+  white-space: normal;
+  text-align: right;
+}

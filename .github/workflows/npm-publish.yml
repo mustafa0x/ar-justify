@@ -1,0 +1,25 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: jdx/mise-action@v3
+        with:
+          mise_toml: |
+            [tools]
+            node = 'lts'
+
+      - run: npm test
+      - run: npm publish --access public --provenance
