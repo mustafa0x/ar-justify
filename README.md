@@ -115,6 +115,10 @@ For long readers, initialize only the rendered pages and call `refresh()` only a
 
 Visible elongations are rendered by empty, `aria-hidden` marker elements. They are not inserted into `textContent`, copied text, or the canonical source string.
 
+## Credits
+
+The kashida analyzer and pattern sets are ported from Khaled Hosny's [Raqim Kashida](https://github.com/aliftype/raqim-kashida). See [LICENSE](LICENSE) for attribution and license details.
+
 ## Development
 
 ```sh

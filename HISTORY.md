@@ -422,6 +422,7 @@ Such systems prove algorithms and font technologies, but they are not a substitu
 
 The project's 2025 research thread assembled several practical sources:
 
+- Khaled Hosny's [Raqim Kashida](https://github.com/aliftype/raqim-kashida), whose analyzer and pattern sets are ported directly into `ar-justify`;
 - a [Stack Overflow discussion](https://stackoverflow.com/questions/17011065/how-to-get-the-text-justifykashida-css-property-effect-on-to-the-arabic-text) about the vanished CSS behavior;
 - the [old HarfBuzz priority logic](https://cgit.freedesktop.org/harfbuzz.old/tree/src/harfbuzz-arabic.c#n336) and its [Chromium copy](https://github.com/adobe/chromium/blob/master/third_party/harfbuzz/src/harfbuzz-arabic.c);
 - an early [Persian Computing discussion](https://groups.google.com/g/persian-computing/c/s-ftgmBvlF0/m/mhB2V9ELwwYJ);
