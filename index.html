@@ -17,17 +17,15 @@
 
       :root {
         color-scheme: light;
-        --canvas: #eee9de;
+        --page: #f5f1e8;
         --paper: #fffdf8;
-        --ink: #211d17;
-        --muted: #696157;
-        --line: #cfc5b5;
-        --line-strong: #9c8e7a;
-        --accent: #943f25;
-        --accent-soft: #f2ddd2;
-        --success: #4d6a4a;
-        --stage-width: 900px;
-        --text-size: 32px;
+        --ink: #1f1c17;
+        --muted: #716b61;
+        --line: #d8d0c1;
+        --accent: #8b3f25;
+        --success: #4e714d;
+        --stage-width: 980px;
+        --text-size: 30px;
       }
 
       * {
@@ -35,7 +33,7 @@
       }
 
       html {
-        background: var(--canvas);
+        background: var(--page);
       }
 
       body {
@@ -43,9 +41,7 @@
         min-height: 100vh;
         margin: 0;
         color: var(--ink);
-        background:
-          linear-gradient(rgb(33 29 23 / 0.035) 1px, transparent 1px) 0 0 / 100% 32px,
-          var(--canvas);
+        background: var(--page);
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
@@ -60,329 +56,244 @@
         font: inherit;
       }
 
-      button,
-      textarea,
-      input[type="range"] {
-        accent-color: var(--accent);
-      }
-
       button:focus-visible,
-      textarea:focus-visible,
       input:focus-visible,
+      textarea:focus-visible,
       a:focus-visible {
-        outline: 3px solid rgb(148 63 37 / 0.3);
+        outline: 3px solid rgb(139 63 37 / 0.28);
         outline-offset: 3px;
       }
 
-      .shell {
-        width: min(1440px, calc(100% - 48px));
-        margin-inline: auto;
+      .page {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 42px 0 max(72px, env(safe-area-inset-bottom));
       }
 
-      .masthead {
+      header {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-height: 64px;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .brand {
-        color: var(--ink);
-        font-size: 15px;
-        font-weight: 750;
-        letter-spacing: -0.02em;
-        text-decoration: none;
-      }
-
-      .github-link {
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 650;
-        text-underline-offset: 4px;
-      }
-
-      .github-link:hover {
-        color: var(--ink);
-      }
-
-      .intro {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
-        gap: 48px;
         align-items: end;
-        padding: clamp(42px, 7vw, 88px) 0 36px;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
       }
 
       h1 {
-        max-width: 780px;
+        max-width: 760px;
         margin: 0;
         font-family: Georgia, "Times New Roman", serif;
-        font-size: clamp(42px, 6vw, 82px);
-        font-weight: 500;
-        letter-spacing: -0.04em;
-        line-height: 0.96;
+        font-size: clamp(34px, 5vw, 58px);
+        font-weight: 540;
+        letter-spacing: -0.035em;
+        line-height: 1;
         text-wrap: balance;
       }
 
       .lede {
-        max-width: 520px;
-        margin: 0 0 4px;
+        max-width: 720px;
+        margin: 14px 0 0;
         color: var(--muted);
-        font-size: 15px;
-        line-height: 1.65;
+        line-height: 1.6;
       }
 
-      code {
-        padding: 0.08em 0.35em;
-        border: 1px solid var(--line);
-        border-radius: 4px;
-        background: rgb(255 253 248 / 0.55);
-        color: var(--ink);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-        font-size: 0.9em;
-      }
-
-      .workbench {
-        display: grid;
-        grid-template-columns: minmax(330px, 0.72fr) minmax(540px, 1.28fr);
-        min-height: 650px;
-        margin-bottom: 48px;
-        border-block: 1px solid var(--line-strong);
-        background: rgb(255 253 248 / 0.26);
-        animation: reveal 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-      }
-
-      .editor,
-      .preview {
-        min-width: 0;
-        padding-block: 28px 34px;
-      }
-
-      .editor {
-        padding-right: 28px;
-        border-right: 1px solid var(--line);
-      }
-
-      .preview {
-        padding-left: 28px;
-      }
-
-      .section-head,
-      .editor-meta,
-      .preview-head,
-      .controls,
-      .metrics {
-        display: flex;
-        align-items: center;
-      }
-
-      .section-head,
-      .preview-head {
-        min-height: 44px;
-        justify-content: space-between;
-        gap: 16px;
-        margin-bottom: 14px;
-      }
-
-      h2 {
-        margin: 0;
-        font-size: 13px;
-        font-weight: 780;
-        letter-spacing: 0.01em;
-      }
-
-      .hint,
-      .character-count {
-        margin: 0;
-        color: var(--muted);
-        font-size: 12px;
-        line-height: 1.5;
-      }
-
-      .text-input {
-        display: block;
-        width: 100%;
-        min-height: 492px;
-        resize: vertical;
-        padding: 22px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        color: var(--ink);
-        background: var(--paper);
-        caret-color: var(--accent);
-        font-family: "Kitab", "Traditional Arabic", serif;
-        font-size: 22px;
-        line-height: 1.9;
-        unicode-bidi: plaintext;
-        box-shadow: 0 12px 30px rgb(51 39 24 / 0.06);
-      }
-
-      .text-input:hover {
-        border-color: var(--line-strong);
-      }
-
-      .text-input[aria-invalid="true"] {
-        border-color: var(--accent);
-      }
-
-      .editor-meta {
-        justify-content: space-between;
-        gap: 16px;
-        margin-top: 12px;
-      }
-
-      .text-button {
-        min-height: 44px;
-        padding: 0;
-        border: 0;
-        color: var(--muted);
-        background: transparent;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 700;
-        text-decoration: underline;
-        text-decoration-color: var(--line-strong);
-        text-underline-offset: 4px;
-      }
-
-      .text-button:hover {
-        color: var(--ink);
-      }
-
-      .layout-status {
+      .status {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 9px;
+        min-width: max-content;
+        padding: 9px 13px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--paper);
         color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 13px;
       }
 
       .status-dot {
-        width: 8px;
-        height: 8px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
-        background: var(--line-strong);
+        background: var(--line);
       }
 
-      .layout-status[data-state="ready"] .status-dot {
+      .status[data-state="ready"] .status-dot {
         background: var(--success);
       }
 
+      .source {
+        margin-bottom: 16px;
+        padding: 17px 18px 18px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--paper);
+      }
+
+      .source-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 10px;
+      }
+
+      .source-head label {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .source-meta {
+        color: var(--muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      textarea {
+        display: block;
+        width: 100%;
+        min-height: 190px;
+        resize: vertical;
+        padding: 17px 19px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: var(--ink);
+        background: #fff;
+        caret-color: var(--accent);
+        font-family: "Kitab", "Traditional Arabic", serif;
+        font-size: 21px;
+        line-height: 1.9;
+        unicode-bidi: plaintext;
+      }
+
+      textarea:hover {
+        border-color: #aa9f8d;
+      }
+
       .controls {
-        flex-wrap: wrap;
-        gap: 16px 24px;
-        padding: 15px 0;
-        border-block: 1px solid var(--line);
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) minmax(160px, 0.72fr) auto;
+        gap: 16px;
+        align-items: end;
+        padding: 17px 18px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--paper);
       }
 
       .control {
-        display: grid;
-        grid-template-columns: auto minmax(90px, 1fr) auto;
-        gap: 10px;
-        align-items: center;
-        min-width: 190px;
-        flex: 1;
+        min-width: 0;
       }
 
-      .control label,
-      .control output,
-      .marker-toggle {
+      .control-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 7px;
         color: var(--muted);
-        font-size: 11px;
-        font-weight: 650;
+        font-size: 12px;
       }
 
-      .control output {
-        min-width: 47px;
+      .control-head label {
         color: var(--ink);
-        text-align: right;
+        font-weight: 680;
+      }
+
+      .control-head output {
         font-variant-numeric: tabular-nums;
       }
 
       input[type="range"] {
         width: 100%;
-        min-height: 44px;
+        min-height: 24px;
         margin: 0;
+        accent-color: var(--accent);
         cursor: pointer;
       }
 
-      .marker-toggle {
-        display: inline-flex;
+      .actions {
+        display: flex;
         align-items: center;
-        min-height: 44px;
         gap: 8px;
-        cursor: pointer;
-        white-space: nowrap;
       }
 
-      .marker-toggle input {
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
+        padding-inline: 4px;
+        color: var(--muted);
+        font-size: 12px;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      .switch input {
         width: 16px;
         height: 16px;
         margin: 0;
+        accent-color: var(--accent);
       }
 
-      .copy-button {
-        min-height: 44px;
-        padding: 0 16px;
-        border: 1px solid var(--ink);
-        border-radius: 6px;
-        color: var(--paper);
-        background: var(--ink);
+      button {
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        background: #fff;
+        color: var(--ink);
         cursor: pointer;
-        font-size: 12px;
-        font-weight: 750;
       }
 
-      .copy-button:hover {
-        background: #433b31;
+      button:hover {
+        border-color: #aa9f8d;
       }
 
-      .copy-button:disabled {
-        border-color: var(--line);
-        color: var(--muted);
-        background: transparent;
+      button:disabled {
+        color: #a29a8d;
+        background: #f5f1e9;
         cursor: not-allowed;
       }
 
       .metrics {
+        display: flex;
         flex-wrap: wrap;
-        gap: 6px 18px;
-        min-height: 44px;
-        color: var(--muted);
-        font-size: 11px;
-        font-variant-numeric: tabular-nums;
+        gap: 8px;
+        margin: 14px 0 18px;
       }
 
-      .metric + .metric::before {
-        content: "·";
-        margin-right: 18px;
-        color: var(--line-strong);
+      .metric {
+        padding: 6px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgb(255 253 248 / 0.65);
+        color: var(--muted);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
       }
 
       .stage-scroll {
         overflow-x: auto;
-        padding: 14px 4px 28px;
-        scrollbar-color: var(--line-strong) transparent;
+        padding: 12px 0 18px;
+        scrollbar-color: #aa9f8d transparent;
         scrollbar-width: thin;
       }
 
       .stage {
         width: min(var(--stage-width), 100%);
-        min-height: 360px;
-        margin-inline: auto;
-        padding: clamp(28px, 5vw, 62px);
+        min-width: 300px;
+        min-height: 280px;
+        margin: 0 auto;
+        padding: clamp(28px, 5vw, 56px);
         border: 1px solid var(--line);
-        border-radius: 4px;
+        border-radius: 18px;
         background: var(--paper);
-        box-shadow: 0 22px 54px rgb(51 39 24 / 0.09);
+        box-shadow: 0 24px 65px rgb(50 39 24 / 0.08);
       }
 
       .justified-text {
         font-family: "Kitab", "Traditional Arabic", serif;
         font-size: var(--text-size);
-        line-height: 1.9;
+        line-height: 1.95;
       }
 
       .justified-text p {
@@ -391,17 +302,17 @@
       }
 
       .justified-text p + p {
-        margin-top: 0.9em;
+        margin-top: 0.7em;
       }
 
       .show-markers [data-ar-justify-kashida]::before {
-        background: var(--accent-soft);
-        box-shadow: inset 0 -1px var(--accent);
+        background: #f2cbb7;
+        box-shadow: inset 0 -1px #a44f2c;
       }
 
       .empty {
         display: grid;
-        min-height: 230px;
+        min-height: 170px;
         place-items: center;
         color: var(--muted);
         font-size: 13px;
@@ -412,199 +323,135 @@
         display: none;
       }
 
-      footer {
-        padding: 0 0 max(36px, env(safe-area-inset-bottom));
+      .note {
+        max-width: 760px;
+        margin: 18px auto 0;
         color: var(--muted);
-        font-size: 12px;
+        font-size: 13px;
         line-height: 1.6;
+        text-align: center;
       }
 
-      @keyframes reveal {
-        from {
-          opacity: 0;
-          clip-path: inset(0 0 8% 0);
-          transform: translateY(12px);
-        }
-        to {
-          opacity: 1;
-          clip-path: inset(0);
-          transform: translateY(0);
-        }
+      .note a {
+        color: inherit;
+        text-underline-offset: 3px;
       }
 
-      @media (max-width: 980px) {
-        .intro {
-          grid-template-columns: 1fr;
-          gap: 20px;
-        }
-
-        .workbench {
-          grid-template-columns: 1fr;
-        }
-
-        .editor {
-          padding-right: 0;
-          border-right: 0;
-          border-bottom: 1px solid var(--line-strong);
-        }
-
-        .preview {
-          padding-left: 0;
-        }
-
-        .text-input {
-          min-height: 280px;
-        }
-      }
-
-      @media (max-width: 620px) {
-        .shell {
-          width: min(100% - 24px, 1440px);
-        }
-
-        .masthead {
-          min-height: 56px;
-        }
-
-        .intro {
-          padding-top: 36px;
-        }
-
-        h1 {
-          font-size: clamp(40px, 13vw, 58px);
-        }
-
-        .section-head,
-        .preview-head {
-          align-items: flex-start;
+      @media (max-width: 820px) {
+        header {
+          align-items: start;
           flex-direction: column;
-          justify-content: flex-start;
-          min-height: 0;
         }
 
-        .text-input {
-          padding: 16px;
+        .controls {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .actions {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 540px) {
+        .page {
+          width: min(100% - 20px, 1180px);
+          padding-top: 26px;
+        }
+
+        .source-head {
+          align-items: start;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        textarea {
+          min-height: 240px;
+          padding: 15px;
           font-size: 19px;
         }
 
         .controls {
-          gap: 8px;
+          grid-template-columns: 1fr;
         }
 
-        .control {
-          flex-basis: 100%;
-        }
-
-        .copy-button {
-          flex: 1;
-        }
-
-        .metric {
-          display: block;
-          width: 100%;
-        }
-
-        .metric + .metric::before {
-          content: none;
+        .actions {
+          grid-column: auto;
+          flex-wrap: wrap;
         }
 
         .stage {
-          min-height: 280px;
-          padding: 28px 16px;
+          padding: 28px 18px;
         }
 
         .justified-text {
-          line-height: 1.75;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .workbench {
-          animation: none;
+          line-height: 1.8;
         }
       }
     </style>
   </head>
   <body>
-    <header class="masthead shell">
-      <a class="brand" href="https://www.npmjs.com/package/ar-justify">ar-justify</a>
-      <a class="github-link" href="https://github.com/mustafa0x/ar-justify">View source on GitHub</a>
-    </header>
+    <main class="page">
+      <header>
+        <div>
+          <h1>Arabic text justification</h1>
+          <p class="lede">Paste any Arabic text. The preview preserves every character and adds visual kashidas to justify each line.</p>
+        </div>
+        <div class="status" id="status" data-state="measuring" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <strong id="status-label">Measuring…</strong>
+        </div>
+      </header>
 
-    <main class="shell">
-      <section class="intro" aria-labelledby="page-title">
-        <h1 id="page-title">Justify Arabic text.</h1>
-        <p class="lede">Paste or type Arabic prose, poetry, or any plain text. Paragraph breaks and punctuation stay intact while the preview adds kashidas to fit each line.</p>
-      </section>
-
-      <div class="workbench">
-        <section class="editor" aria-labelledby="input-title">
-          <div class="section-head">
-            <h2 id="input-title">Source text</h2>
-            <p class="hint" id="input-help">Plain text · blank lines create paragraphs</p>
-          </div>
-
-          <textarea
-            class="text-input"
-            id="text-input"
-            lang="ar"
-            dir="rtl"
-            aria-describedby="input-help"
-            spellcheck="false"
-          >عَجِبتُ لِمَن لَهُ قَدٌّ وَحَدٌّ  :: وَيَنبو نَبوَةَ القَضِمِ الكَهامِ
+      <section class="source" aria-labelledby="source-label">
+        <div class="source-head">
+          <label id="source-label" for="text-input">Source text</label>
+          <span class="source-meta" id="character-count" aria-live="polite">0 characters</span>
+        </div>
+        <textarea id="text-input" lang="ar" dir="rtl" spellcheck="false">عَجِبتُ لِمَن لَهُ قَدٌّ وَحَدٌّ  :: وَيَنبو نَبوَةَ القَضِمِ الكَهامِ
 
 وَمَن يَجِدُ الطَريقَ إِلى المَعالي  :: فَلا يَذَرُ المَطِيَّ بِلا سَنامِ
 
 وَلَم أَرَ في عُيوبِ الناسِ شَيئاً  :: كَنَقصِ القادِرينَ عَلى التَمامِ</textarea>
+      </section>
 
-          <div class="editor-meta">
-            <p class="character-count" id="character-count" aria-live="polite">0 characters</p>
-            <button class="text-button" id="restore-sample" type="button">Restore sample</button>
+      <section class="controls" aria-label="Preview controls">
+        <div class="control">
+          <div class="control-head">
+            <label for="width">Preview max width</label>
+            <output id="width-output" for="width">980 px</output>
           </div>
-        </section>
+          <input id="width" type="range" min="360" max="1120" step="10" value="980">
+        </div>
 
-        <section class="preview" aria-labelledby="preview-title">
-          <div class="preview-head">
-            <h2 id="preview-title">Justified preview</h2>
-            <div class="layout-status" id="layout-status" data-state="measuring" aria-live="polite">
-              <span class="status-dot" aria-hidden="true"></span>
-              <span id="layout-label">Justifying…</span>
-            </div>
+        <div class="control">
+          <div class="control-head">
+            <label for="size">Font size</label>
+            <output id="size-output" for="size">30 px</output>
           </div>
+          <input id="size" type="range" min="20" max="44" step="1" value="30">
+        </div>
 
-          <div class="controls" aria-label="Preview controls">
-            <div class="control">
-              <label for="width">Max width</label>
-              <input id="width" type="range" min="360" max="1080" step="10" value="900">
-              <output id="width-output" for="width">900 px</output>
-            </div>
-            <div class="control">
-              <label for="size">Type</label>
-              <input id="size" type="range" min="20" max="44" step="1" value="32">
-              <output id="size-output" for="size">32 px</output>
-            </div>
-            <label class="marker-toggle">
-              <input id="markers" type="checkbox">
-              Show kashidas
-            </label>
-            <button class="copy-button" id="copy" type="button">Copy text</button>
-          </div>
+        <div class="actions">
+          <label class="switch"><input id="markers" type="checkbox"> Show kashidas</label>
+          <button id="restore" type="button">Restore sample</button>
+          <button id="copy" type="button">Copy text</button>
+        </div>
+      </section>
 
-          <div class="metrics" aria-live="polite">
-            <span class="metric" id="marker-metric">0 kashidas</span>
-          </div>
+      <div class="metrics" aria-live="polite">
+        <span class="metric" id="line-metric">0 lines</span>
+        <span class="metric" id="marker-metric">0 kashidas</span>
+      </div>
 
-          <div class="stage-scroll">
-            <article class="stage" id="stage" lang="ar" dir="rtl">
-              <div class="justified-text" id="justified-text"></div>
-              <div class="empty" id="empty-state" hidden>Enter text to begin.</div>
-            </article>
-          </div>
+      <div class="stage-scroll">
+        <section class="stage" id="stage" lang="ar" dir="rtl" aria-label="Justified preview">
+          <div class="justified-text" id="justified-text"></div>
+          <div class="empty" id="empty-state" hidden>Enter text to begin.</div>
         </section>
       </div>
-    </main>
 
-    <footer class="shell">Kashidas are visual markers only. Copied text remains exactly as entered.</footer>
+      <p class="note">Kashidas are visual markers only. Copying returns exactly what you entered. <a href="https://github.com/mustafa0x/ar-justify">View the source on GitHub.</a></p>
+    </main>
 
     <script type="module">
       import { justifyArabic } from "./src/index.js";
@@ -613,33 +460,17 @@
       const input = document.querySelector("#text-input");
       const preview = document.querySelector("#justified-text");
       const empty = document.querySelector("#empty-state");
+      const status = document.querySelector("#status");
+      const statusLabel = document.querySelector("#status-label");
       const characterCount = document.querySelector("#character-count");
-      const copy = document.querySelector("#copy");
-      const layoutStatus = document.querySelector("#layout-status");
-      const layoutLabel = document.querySelector("#layout-label");
+      const lineMetric = document.querySelector("#line-metric");
+      const markerMetric = document.querySelector("#marker-metric");
       const width = document.querySelector("#width");
       const size = document.querySelector("#size");
+      const copy = document.querySelector("#copy");
       const sample = input.value;
-      const outputs = {
-        width: document.querySelector("#width-output"),
-        size: document.querySelector("#size-output"),
-        markers: document.querySelector("#marker-metric"),
-      };
       let controllers = [];
       let frame;
-
-      function updateStatus() {
-        const markers = preview.querySelectorAll("[data-ar-justify-kashida]").length;
-        layoutStatus.dataset.state = "ready";
-        layoutLabel.textContent = "Justified";
-        outputs.markers.textContent = `${markers} kashida${markers === 1 ? "" : "s"}`;
-      }
-
-      function clearStatus() {
-        layoutStatus.dataset.state = "empty";
-        layoutLabel.textContent = "Waiting for text";
-        outputs.markers.textContent = "0 kashidas";
-      }
 
       function rebuild() {
         frame = undefined;
@@ -648,31 +479,47 @@
         preview.replaceChildren();
 
         const value = input.value;
-        const count = [...value].length;
-        characterCount.textContent = `${count} character${count === 1 ? "" : "s"}`;
+        const characterTotal = [...value].length;
+        const lines = value.split("\n");
+        const textLines = lines.filter((line) => line.trim());
+        characterCount.textContent = `${characterTotal} character${characterTotal === 1 ? "" : "s"}`;
+        lineMetric.textContent = `${textLines.length} line${textLines.length === 1 ? "" : "s"}`;
         copy.disabled = !value.trim();
 
         if (!value.trim()) {
           preview.hidden = true;
           empty.hidden = false;
-          clearStatus();
+          status.dataset.state = "empty";
+          statusLabel.textContent = "Waiting for text";
+          markerMetric.textContent = "0 kashidas";
           return;
         }
 
-        const paragraphs = value
-          .split(/\n(?:[ \t]*\n)+/)
-          .filter((paragraph) => paragraph.trim());
+        let paragraph;
+        for (const line of lines) {
+          if (!line.trim()) {
+            paragraph = undefined;
+            continue;
+          }
 
-        for (const text of paragraphs) {
-          const paragraph = document.createElement("p");
-          paragraph.textContent = text;
-          preview.append(paragraph);
-          controllers.push(justifyArabic(paragraph, { justifyLastLine: true }));
+          if (!paragraph) {
+            paragraph = document.createElement("p");
+            preview.append(paragraph);
+          } else {
+            paragraph.append("\n");
+          }
+          paragraph.append(line);
         }
 
         preview.hidden = false;
         empty.hidden = true;
-        updateStatus();
+        controllers = [...preview.querySelectorAll("p")].map((element) =>
+          justifyArabic(element, { justifyLastLine: true }),
+        );
+        const markerTotal = preview.querySelectorAll("[data-ar-justify-kashida]").length;
+        markerMetric.textContent = `${markerTotal} kashida${markerTotal === 1 ? "" : "s"}`;
+        status.dataset.state = "ready";
+        statusLabel.textContent = "Justified";
       }
 
       function scheduleRebuild() {
@@ -683,17 +530,17 @@
       function updateControls() {
         root.style.setProperty("--stage-width", `${width.value}px`);
         root.style.setProperty("--text-size", `${size.value}px`);
-        outputs.width.value = `${width.value} px`;
-        outputs.size.value = `${size.value} px`;
+        document.querySelector("#width-output").value = `${width.value} px`;
+        document.querySelector("#size-output").value = `${size.value} px`;
         scheduleRebuild();
       }
 
       input.addEventListener("input", scheduleRebuild);
       [width, size].forEach((control) => control.addEventListener("input", updateControls));
       document.querySelector("#markers").addEventListener("change", (event) => {
-        document.querySelector(".preview").classList.toggle("show-markers", event.target.checked);
+        document.body.classList.toggle("show-markers", event.target.checked);
       });
-      document.querySelector("#restore-sample").addEventListener("click", () => {
+      document.querySelector("#restore").addEventListener("click", () => {
         input.value = sample;
         scheduleRebuild();
         input.focus();
@@ -703,7 +550,7 @@
         copy.textContent = "Copied";
         setTimeout(() => {
           copy.textContent = "Copy text";
-        }, 1000);
+        }, 900);
       });
 
       document.fonts?.ready.then(scheduleRebuild);
