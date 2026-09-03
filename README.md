@@ -2,6 +2,8 @@
 
 A small, dependency-free browser library for Arabic kashida justification. It supports ordinary prose and adaptive two-column poetry while keeping the source text unchanged.
 
+![Arabic poetry justified into balanced columns](https://raw.githubusercontent.com/mustafa0x/ar-justify/main/assets/sample.png)
+
 ## Install
 
 ```sh
