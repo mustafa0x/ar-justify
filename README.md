@@ -1,18 +1,18 @@
-# @nuqayah/ar-justify
+# ar-justify
 
 A small, dependency-free browser library for Arabic kashida justification. It supports ordinary prose and adaptive two-column poetry while keeping the source text unchanged.
 
 ## Install
 
 ```sh
-npm install @nuqayah/ar-justify
+npm install ar-justify
 ```
 
 Import the JavaScript and the single stylesheet:
 
 ```js
-import { justifyArabic, layoutArabicPoem } from "@nuqayah/ar-justify";
-import "@nuqayah/ar-justify/style.css";
+import { justifyArabic, layoutArabicPoem } from "ar-justify";
+import "ar-justify/style.css";
 ```
 
 ## Prose

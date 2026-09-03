@@ -1,5 +1,5 @@
 {
-  "name": "@nuqayah/ar-justify",
+  "name": "ar-justify",
   "version": "0.1.1",
   "description": "Kashida-based Arabic text and poetry justification for the browser",
   "repository": {
