@@ -217,7 +217,7 @@ Its work is important for standards discussions because it demonstrates that a f
 Arabic justification has a substantial technical literature. A few especially relevant examples are:
 
 - Mohamed Elyaakoubi and Azzeddine Lazrek's [“Justify Just or Just Justify”](https://quod.lib.umich.edu/j/jep/3336451.0013.105/--justify-just-or-just-justify?rgn=main;view=fulltext), which integrates allographic variants and stretched forms into optimum-fit paragraph breaking rather than treating each line independently;
-- Mohamed Jamal Eddine Benatia, Mohamed Elyaakoubi, and Azzeddine Lazrek's work on Arabic text justification in TeX-oriented publishing;
+- Mohamed Jamal Eddine Benatia, Mohamed Elyaakoubi, and Azzeddine Lazrek's [“Arabic text justification”](https://tug.org/TUGboat/tb27-2/tb87benatia.pdf), whose 2006 matrix underlies Raqim's Naskh rules;
 - Aqil M. Azmi and Abeer Alsaiari's [“An Algorithm to Justify Arabic Text”](http://ecsjournal.org/Archive/Volume37/Issue5/6.pdf), which combines alternate-width ligatures with prioritized kashida application;
 - Andreas Hallberg's [stretchable-kashida LaTeX experiment](https://github.com/andreasmhallberg/kashida-justification);
 - the Rust [`kashida` crate](https://crates.io/crates/kashida), one of several attempts to package Arabic elongation logic for reuse.
@@ -226,11 +226,13 @@ These projects differ in goals and typographic sophistication, but collectively 
 
 ### Raqim Kashida
 
-Khaled Hosny's [account of Raqim Kashida](https://aliftype.com/blog/introducing-raqim-kashida/english) traces the library to his earlier work refining LibreOffice's kashida implementation. LibreOffice applied one general rule set to every Arabic font, based on Microsoft's old Internet Explorer guidance. Hosny argues that those “simple” rules reflect the constraints of newspaper-composition machinery and work poorly for classical fonts with richer ligatures and contextual forms.
+Khaled Hosny's [account of Raqim Kashida](https://aliftype.com/blog/introducing-raqim-kashida/english) traces the library to his earlier work refining LibreOffice's kashida implementation. LibreOffice applied one general rule set to every Arabic font, based on Microsoft's old Internet Explorer guidance. Hosny argues that those “simple” rules reflect the constraints of newspaper-composition machinery and work poorly for classical fonts with richer ligatures and contextual forms. He further suggests—explicitly as a hypothesis—that Microsoft's rules descend from Al-Ahram-era newspaper composition in the 1950s or early 1960s; the precise transmission remains undocumented.
 
 Hosny first built a Python library and then [`kashida-js`](https://github.com/aliftype/kashida-js) around the simple rules. After experimenting with Naskh-specific rules, he replaced hard-coded policies with Raqim's small pattern language, loosely inspired by Knuth–Liang hyphenation patterns. A pattern marks permissible insertion points and assigns priorities; the consumer remains responsible for shaping, choosing among points, and fitting the line.
 
-Raqim currently includes four pattern sets: Simple, Naskh, Nastaliq, and Syriac. Nastaliq demonstrates the system's extensibility by importing Naskh and overriding selected restrictions and priorities. Hosny also proposes that fonts could eventually carry their own patterns, perhaps in a custom table or an extension of OpenType `JSTF`, so opportunity data can match the design of the active font.
+Raqim's [Naskh patterns](https://github.com/aliftype/raqim-kashida/blob/main/data/arabic-naskh.pat) synthesize Benatia, Elyaakoubi, and Lazrek's 2006 matrix with rules from Fawzi Salim Afifi's *Learning Arabic Calligraphy*. Their comments preserve a revealing disagreement: Afifi prohibits elongation after lām, while Muhammad Muʾnis's *al-Mizan al-ma’luf* treats lām like bāʾ and illustrates its elongation. This is concrete evidence that opportunity tables encode particular sources and judgments, not universal Arabic rules.
+
+Raqim currently includes four pattern sets: Simple, Naskh, Nastaliq, and Syriac. Nastaliq demonstrates the system's extensibility by importing Naskh and overriding selected restrictions and priorities. The Syriac set follows [guidelines contributed through LibreOffice's issue tracker](https://bugs.documentfoundation.org/show_bug.cgi?id=140767), showing that cursive elongation is a neighboring-script concern rather than an Arabic-only mechanism. Hosny also proposes that fonts could eventually carry their own patterns, perhaps in a custom table or an extension of OpenType `JSTF`, so opportunity data can match the design of the active font.
 
 `ar-justify` ports Raqim 0.2.5's analyzer and its three Arabic pattern sets to JavaScript. It adds the browser-facing fitting, measurement, and source-preserving rendering layer that Raqim deliberately leaves to consumers.
 
@@ -729,6 +731,7 @@ A useful browser implementation does not need to reproduce every calligraphic tr
 - Titus Nemeth, [“On Arabic justification, part 1”](https://research.reading.ac.uk/typoarabic/on-arabic-justification-part-1/).
 - Titus Nemeth, [“On Arabic justification, part 2 – software implementations”](https://research.reading.ac.uk/typoarabic/on-arabic-justification-part-2-software-implementations/).
 - Mohamed Elyaakoubi and Azzeddine Lazrek, [“Justify Just or Just Justify”](https://quod.lib.umich.edu/j/jep/3336451.0013.105/--justify-just-or-just-justify?rgn=main;view=fulltext).
+- Mohamed Jamal Eddine Benatia, Mohamed Elyaakoubi, and Azzeddine Lazrek, [“Arabic text justification”](https://tug.org/TUGboat/tb27-2/tb87benatia.pdf).
 - Aqil M. Azmi and Abeer Alsaiari, [“An Algorithm to Justify Arabic Text”](http://ecsjournal.org/Archive/Volume37/Issue5/6.pdf).
 - [Persian Computing discussion on kashida](https://groups.google.com/g/persian-computing/c/s-ftgmBvlF0/m/mhB2V9ELwwYJ).
 
