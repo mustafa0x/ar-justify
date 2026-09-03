@@ -4,6 +4,8 @@ A small, dependency-free browser library for Arabic kashida justification. It su
 
 ![Arabic poetry justified into balanced columns](https://raw.githubusercontent.com/mustafa0x/ar-justify/main/assets/sample.png)
 
+For the background—from manuscript practice and mechanized composition through Microsoft Word, Internet Explorer, early CSS proposals, and the modern browser gap—see [A history of Arabic text justification](HISTORY.md).
+
 ## Install
 
 ```sh
