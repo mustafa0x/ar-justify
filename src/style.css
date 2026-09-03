@@ -47,5 +47,12 @@
   display: block;
   width: auto;
   white-space: normal;
-  text-align: right;
+}
+
+[data-ar-poem][data-layout="stacked"] [data-sadr] {
+  text-align: start;
+}
+
+[data-ar-poem][data-layout="stacked"] [data-ajz] {
+  text-align: end;
 }

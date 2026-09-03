@@ -83,6 +83,7 @@ The poetry adapter:
 - uses equal-width paired columns while every hemistich still fits;
 - reduces optional stretch before abandoning the paired layout;
 - stacks the entire poem when two columns no longer fit;
+- gives each stacked hemistich its own row, with the sadr aligned to the RTL start edge and the ajz to the opposite edge;
 - observes container resizes by default.
 
 Its small option set is:

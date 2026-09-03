@@ -171,7 +171,7 @@ Borders are one pixel. Stronger hierarchy uses darker line color, not thicker st
 
 ### Measured Proof
 - The proof is centered within its chosen measure and bounded by thin blue vertical rails with short end ticks. Axis metadata sits above, a ruled data strip sits below, and a vertical proof identifier may mark the outer edge on large screens.
-- Prose fills one continuous measure. Poetry uses equal paired hemistich columns on wide screens and stacks every verse on narrow screens; the rails describe the overall proof field.
+- Prose fills one continuous measure. Poetry uses equal paired hemistich columns on wide screens. When those columns no longer fit, each sadr occupies a right-aligned row and its ajz follows on a left-aligned row; the rails describe the overall proof field.
 
 ### Insertion Toggle
 - A black-outlined pill contains a circular thumb. The enabled state turns the track blue and moves the thumb; its purpose is always stated in a neighboring mono label.
