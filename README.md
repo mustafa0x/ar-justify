@@ -4,7 +4,7 @@ A small, dependency-free browser library for Arabic kashida justification. It su
 
 ![Arabic poetry justified into balanced columns](https://raw.githubusercontent.com/mustafa0x/ar-justify/main/assets/sample.png)
 
-Try the interactive poetry justifier by serving [`index.html`](./index.html) from the repository root. Enter one verse per line with `::` between its hemistichs.
+[Try the live Arabic poetry justifier](https://mustafa0x.github.io/ar-justify/). Enter one verse per line with `::` between its hemistichs.
 
 For the background—from manuscript practice and mechanized composition through Microsoft Word, Internet Explorer, early CSS proposals, and the modern browser gap—see [A history of Arabic text justification](HISTORY.md).
 
