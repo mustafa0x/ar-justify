@@ -1,0 +1,173 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-03T17:23:51Z",
+  "title": "Design System: ar—justify",
+  "extensions": {
+    "colorMeta": {
+      "proof-blue": {
+        "role": "primary",
+        "displayName": "Proof Blue",
+        "canonical": "#2448ff",
+        "tonalRamp": ["#071353", "#0c1f7f", "#122cad", "#1838d7", "#2448ff", "#6680ff", "#a8b7ff", "#edf0ff"]
+      },
+      "proof-blue-soft": {
+        "role": "primary",
+        "displayName": "Proof Blue Soft",
+        "canonical": "#dce2ff",
+        "tonalRamp": ["#1d2341", "#363d64", "#535c89", "#747faf", "#9aa5d3", "#bdc7ed", "#dce2ff", "#f3f5ff"]
+      },
+      "mineral-paper": {
+        "role": "neutral",
+        "displayName": "Mineral Paper",
+        "canonical": "#f3f4f1",
+        "tonalRamp": ["#222321", "#41433f", "#62655f", "#858981", "#aaaea6", "#ced1ca", "#e5e7e1", "#f3f4f1"]
+      },
+      "specimen-surface": {
+        "role": "neutral",
+        "displayName": "Specimen Surface",
+        "canonical": "#fafbf8",
+        "tonalRamp": ["#242522", "#454742", "#686b64", "#8d9188", "#b3b7af", "#d7dad3", "#eceee8", "#fafbf8"]
+      },
+      "carbon-ink": {
+        "role": "neutral",
+        "displayName": "Carbon Ink",
+        "canonical": "#111214",
+        "tonalRamp": ["#111214", "#292b2e", "#46494d", "#676b70", "#8d9196", "#b5b8bc", "#d9dbdd", "#f1f2f2"]
+      },
+      "measured-muted": {
+        "role": "neutral",
+        "displayName": "Measured Muted",
+        "canonical": "#5f6362",
+        "tonalRamp": ["#202221", "#393c3b", "#5f6362", "#7c8180", "#9ba09f", "#bcc0bf", "#dcdfde", "#f2f3f3"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#c8cbc8",
+        "tonalRamp": ["#252725", "#444744", "#656965", "#888c88", "#adb0ad", "#c8cbc8", "#e1e3e1", "#f5f6f5"]
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Hairline Strong",
+        "canonical": "#8d918f",
+        "tonalRamp": ["#222423", "#3d403f", "#5a5e5c", "#777b79", "#8d918f", "#afb3b1", "#d2d5d3", "#f0f1f0"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Foundry Display", "purpose": "The page thesis only." },
+      "body": { "displayName": "Utility Body", "purpose": "General English content." },
+      "label": { "displayName": "Instrument Label", "purpose": "Controls, status, values, and compact instructions." },
+      "arabic": { "displayName": "Arabic Proof", "purpose": "Source editing and live justified composition." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-proof", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "Draw the measurement rails and move functional controls." },
+      { "name": "duration-state", "value": "150ms", "purpose": "Color and border state changes." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "560px" },
+      { "name": "stacked-workspace", "value": "820px" },
+      { "name": "compact-stage", "value": "1100px" },
+      { "name": "wide-display", "value": "1450px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The source-safe primary action.",
+      "html": "<button class=\"ds-btn-primary\">COPY SOURCE <svg viewBox=\"0 0 20 20\" aria-hidden=\"true\"><path d=\"M3 10h13M11.5 4.5 17 10l-5.5 5.5\"/></svg></button>",
+      "css": ".ds-btn-primary{display:flex;align-items:center;justify-content:space-between;gap:16px;height:48px;padding:0 17px;border:1px solid #2448ff;border-radius:0;background:#2448ff;color:#fff;font:11px 'Fragment Mono',monospace;transition:background 150ms,border-color 150ms}.ds-btn-primary svg{width:18px;fill:none;stroke:currentColor;stroke-width:1.6}.ds-btn-primary:hover{border-color:#111214;background:#111214}.ds-btn-primary:focus-visible{outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A square outlined utility action.",
+      "html": "<button class=\"ds-btn-secondary\">RESTORE</button>",
+      "css": ".ds-btn-secondary{height:48px;padding:0 17px;border:1px solid #111214;border-radius:0;background:transparent;color:#111214;font:11px 'Fragment Mono',monospace;transition:background 150ms,color 150ms}.ds-btn-secondary:hover{background:#111214;color:#fff}.ds-btn-secondary:focus-visible{outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Arabic Source Field",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "A source-preserving RTL plain-text field.",
+      "html": "<textarea class=\"ds-source\" dir=\"rtl\">عَلَى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ</textarea>",
+      "css": ".ds-source{box-sizing:border-box;width:100%;min-height:120px;resize:vertical;padding:13px 15px;border:1px solid #8d918f;border-radius:0;background:#fafbf8;color:#111214;caret-color:#2448ff;font:24px/1.75 Kitab,'Traditional Arabic',serif;unicode-bidi:plaintext}.ds-source:hover{border-color:#111214}.ds-source:focus{border-color:#2448ff;outline:3px solid #2448ff;outline-offset:3px;background:#fff}"
+    },
+    {
+      "name": "Corpus Select",
+      "kind": "input",
+      "refersTo": "text-field",
+      "description": "A compact square selector for the test corpus.",
+      "html": "<select class=\"ds-select\"><option>Arabic poetry</option><option>Classical prose</option><option>Persian</option></select>",
+      "css": ".ds-select{box-sizing:border-box;width:100%;height:43px;padding:0 13px;border:1px solid #8d918f;border-radius:0;background:#fafbf8;color:#111214;font:11px 'Fragment Mono',monospace}.ds-select:hover{border-color:#111214}.ds-select:focus-visible{border-color:#2448ff;outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "Equal square choices for composition or placement style.",
+      "html": "<div class=\"ds-segments\"><button>PROSE</button><button class=\"is-active\">POETRY</button></div>",
+      "css": ".ds-segments{display:grid;grid-template-columns:1fr 1fr;border:1px solid #8d918f}.ds-segments button{height:47px;border:0;border-radius:0;background:transparent;color:#111214;font:11px 'Fragment Mono',monospace}.ds-segments button+button{border-left:1px solid #8d918f}.ds-segments button:hover{background:#dce2ff}.ds-segments .is-active{background:#2448ff;color:#fff}.ds-segments button:focus-visible{outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Range Axis",
+      "kind": "input",
+      "refersTo": "button-primary",
+      "description": "A two-color measurement axis with a circular active value.",
+      "html": "<label class=\"ds-axis\"><span>MEASURE <output>980 PX</output></span><input type=\"range\" value=\"72\"></label>",
+      "css": ".ds-axis{display:grid;gap:9px;color:#111214;font:10px 'Fragment Mono',monospace}.ds-axis span{display:flex;justify-content:space-between}.ds-axis input{width:100%;accent-color:#2448ff}.ds-axis input:focus-visible{outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Insertion Toggle",
+      "kind": "custom",
+      "refersTo": "button-secondary",
+      "description": "A functional pill used only for binary marker visibility.",
+      "html": "<label class=\"ds-toggle\">SHOW INSERTIONS <input type=\"checkbox\"><span></span></label>",
+      "css": ".ds-toggle{display:inline-flex;align-items:center;gap:12px;color:#111214;font:10px 'Fragment Mono',monospace}.ds-toggle input{position:absolute;opacity:0}.ds-toggle span{position:relative;width:49px;height:25px;border:1px solid #111214;border-radius:999px;background:#fafbf8}.ds-toggle span:after{position:absolute;top:3px;left:3px;width:17px;height:17px;border:1px solid #111214;border-radius:50%;background:#fafbf8;content:'';transition:transform 180ms cubic-bezier(.16,1,.3,1)}.ds-toggle input:checked+span{border-color:#2448ff;background:#2448ff}.ds-toggle input:checked+span:after{border-color:#fff;transform:translateX(24px)}.ds-toggle input:focus-visible+span{outline:3px solid #2448ff;outline-offset:3px}"
+    },
+    {
+      "name": "Measured Proof",
+      "kind": "custom",
+      "refersTo": "text-field",
+      "description": "Arabic composition bounded by the true text measure.",
+      "html": "<div class=\"ds-proof\"><i></i><p dir=\"rtl\">عَلَى قَدْرِ أَهْلِ العَزْمِ تَأْتِي العَزَائِمُ</p><i></i></div>",
+      "css": ".ds-proof{display:grid;grid-template-columns:1px 1fr 1px;align-items:stretch;gap:24px;min-height:180px;background:#fafbf8}.ds-proof i{background:#2448ff}.ds-proof p{align-self:center;margin:0;color:#111214;font:34px/2.05 Kitab,'Traditional Arabic',serif;text-align:justify}.ds-proof:focus-within{outline:3px solid #2448ff;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Measured Proof",
+    "overview": "The interface behaves like a working type-foundry specimen: exact, spacious, and visibly concerned with measure. Arabic composition is the dominant visual evidence, while controls read as instruments around it rather than as generic application chrome. Cool paper, black ink, blue measuring marks, and a fine ruled grid make the page feel printed and computational at once. The system is dense where a typographer needs precision and quiet where the proof needs room.",
+    "keyCharacteristics": [
+      "Arabic text is always the largest and most authoritative content in the workspace.",
+      "Ultramarine is reserved for active state, measurement, selection, and source-safe actions.",
+      "Hairlines and grid divisions organize the page without cards or shadows.",
+      "English utility copy is compact and technical; Arabic remains calligraphic and generous.",
+      "Controls use square geometry except where a circular thumb or pill track communicates movement."
+    ],
+    "rules": [
+      { "name": "The One Blue Rule", "body": "Proof Blue is the only saturated color in normal operation; adding another accent weakens the measured state language.", "section": "colors" },
+      { "name": "The Ink-on-Paper Rule", "body": "Large regions remain cool neutral. Blue measures and activates; it does not become decorative atmosphere.", "section": "colors" },
+      { "name": "The Proof Leads Rule", "body": "English explains the instrument; Arabic demonstrates it and receives the greatest visual scale.", "section": "typography" },
+      { "name": "The Mono Has a Job Rule", "body": "Monospace is reserved for labels, values, status, and instructions tied to the typographic instrument.", "section": "typography" },
+      { "name": "The No Floating Panel Rule", "body": "Structure comes from shared edges and full-length rules, never from detached cards.", "section": "layout" },
+      { "name": "The Printed Sheet Rule", "body": "A component may change ink or surface color in response to state, but it never lifts off the page.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do give the Arabic proof enough space to be read before adding explanation.",
+      "Do align metadata, controls, and ruled boundaries to the shared sheet grid.",
+      "Do reserve Proof Blue for actions, measurement, focus, and active state.",
+      "Do preserve source-safe language wherever users might confuse a visual insertion with text mutation.",
+      "Do adapt the desktop split into a clear controls-then-proof sequence on phones."
+    ],
+    "donts": [
+      "Don't add rounded cards, shadows, glass, gradients, or warm parchment effects.",
+      "Don't use decorative color where a hairline, scale change, or ink weight can carry hierarchy.",
+      "Don't reduce the Arabic proof to a preview thumbnail inside surrounding chrome.",
+      "Don't use monospace as display decoration or replace authored SVG controls with Unicode icon glyphs.",
+      "Don't introduce claims, metrics, or ornamental specimens that are not produced by the real tool."
+    ]
+  }
+}
