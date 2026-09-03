@@ -42,6 +42,16 @@ The final visual line is left natural by default. To justify a single line or th
 justifyArabic(element, { justifyLastLine: true });
 ```
 
+Candidate placement uses the `simple` style by default. Choose a calligraphic pattern set when the typeface calls for it:
+
+```js
+justifyArabic(element, {
+  style: "naskh", // "simple" | "naskh" | "nastaliq"
+});
+```
+
+The analyzer is a JavaScript port of [Raqim Kashida](https://github.com/aliftype/raqim-kashida). It returns every matching insertion point and prioritizes them using Raqim's built-in patterns. `simple` follows newspaper and Microsoft-style rules, while `naskh` and `nastaliq` apply their respective calligraphic rules.
+
 ## Poetry
 
 Represent each verse as an explicit pair of hemistichs:
@@ -82,6 +92,7 @@ layoutArabicPoem(poem, {
   gutterEm: 2.5,
   stretchEm: 0.25,
   observe: true,
+  style: "simple",
 });
 ```
 
@@ -95,9 +106,10 @@ For long readers, initialize only the rendered pages and call `refresh()` only a
 
 ## Scope
 
-- Modern browsers with `Intl.Segmenter` and Unicode property escapes
+- Modern browsers with `Intl.Segmenter`; grapheme boundaries follow the browser's Unicode version
+- Pinned Unicode 17 joining data and Raqim's Arabic pattern sets
 - Horizontal, plain-text elements only
-- No dependencies and no build step
+- No dependencies, WASM, or build step
 - No document scanning or global mutation observer
 - No rich text or `contenteditable` support
 

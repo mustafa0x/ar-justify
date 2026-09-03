@@ -1,53 +1,108 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import test from "node:test";
+import {
+  builtinPatternSet,
+  compilePatternText,
+  findKashidaPoints,
+  formOf,
+  joiningInfo,
+  splitGraphemes,
+} from "../src/raqim.js";
 
-const source = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
-const testSource = `${source}\nexport { getOpportunities, getWords, joiningMask, segment };`;
-const moduleUrl = `data:text/javascript;base64,${Buffer.from(testSource).toString("base64")}`;
-const { getOpportunities, getWords, joiningMask, segment } = await import(moduleUrl);
-
-function opportunities(text) {
-  const clusters = segment(text);
-  const [word] = getWords(clusters, text);
-  return word ? getOpportunities(word) : [];
+function points(text, patterns) {
+  return findKashidaPoints(text, patterns).map(({ offset, priority }) => [
+    offset,
+    priority,
+  ]);
 }
 
-test("uses Unicode joining behavior", () => {
-  assert.equal(joiningMask("ب".codePointAt(0)), 3);
-  assert.equal(joiningMask("ا".codePointAt(0)), 1);
-  assert.equal(joiningMask("ء".codePointAt(0)), 0);
-  assert.equal(joiningMask("ـ".codePointAt(0)), 3);
-  assert.equal(joiningMask("ک".codePointAt(0)), 3);
+function builtin(style, text) {
+  return points(text, builtinPatternSet(style));
+}
+
+test("uses Unicode joining types and groups", () => {
+  assert.equal(joiningInfo("ب").type, 3);
+  assert.equal(joiningInfo("ا").type, 1);
+  assert.equal(joiningInfo("ء").type, 0);
+  assert.equal(joiningInfo("ـ").type, 4);
+  assert.equal(joiningInfo("ک").type, 3);
 });
 
-test("rejects non-joining and lam-alef boundaries", () => {
-  assert.deepEqual(opportunities("دار"), []);
-  assert.deepEqual(opportunities("لا"), []);
-  assert.deepEqual(opportunities("لَا"), []);
+test("derives positional forms", () => {
+  const graphemes = splitGraphemes("بنت");
+  assert.equal(formOf(graphemes, 0), "initial");
+  assert.equal(formOf(graphemes, 1), "medial");
+  assert.equal(formOf(graphemes, 2), "final");
+  assert.equal(formOf(splitGraphemes("ب"), 0), "isolated");
 });
 
-test("keeps marks attached to their base character", () => {
-  assert.equal(segment("سَلام")[0].value, "سَ");
-  assert.deepEqual(opportunities("سَلام"), [{ offset: 2, priority: 2 }]);
+test("returns JavaScript offsets after complete grapheme clusters", () => {
+  assert.deepEqual(builtin("simple", "سَلام"), [[2, 8]]);
 });
 
-test("honors ZWNJ only at the boundary it breaks", () => {
-  const offsets = opportunities("می‌خواهم").map(({ offset }) => offset);
-  assert.ok(offsets.includes(1));
-  assert.ok(!offsets.includes("می‌".length));
+test("honors ZWNJ and ZWJ", () => {
+  const patterns = compilePatternText("ب2ت");
+  assert.deepEqual(points("ب‌ت", patterns), []);
+  assert.deepEqual(points("ب‍ت", patterns), [[2, 2]]);
+  assert.deepEqual(points("ب‍‌ت", patterns), []);
 });
 
-test("implements the seven project priorities", () => {
-  assert.equal(opportunities("سـلام")[0].priority, 1);
-  assert.equal(opportunities("سلام")[0].priority, 2);
-  assert.equal(opportunities("بدر")[0].priority, 3);
-  assert.equal(opportunities("با")[0].priority, 4);
-  assert.deepEqual(opportunities("عبر")[0], { offset: 1, priority: 5 });
-  assert.equal(opportunities("بو")[0].priority, 6);
-  assert.equal(opportunities("تم")[0].priority, 7);
+test("the last matching rule wins", () => {
+  assert.deepEqual(points("بت", compilePatternText("ب2ت\nب5ت")), [[1, 5]]);
+  assert.deepEqual(points("بت", compilePatternText("ب5ت\nب2ت")), [[1, 2]]);
+  assert.deepEqual(points("بت", compilePatternText("ب5ت\nب!ت")), []);
 });
 
-test("does not treat a standalone join control as a glyph", () => {
-  assert.deepEqual(opportunities("‍ب"), []);
+test("supports length-dependent priorities", () => {
+  const patterns = compilePatternText("[:4:]ب6\\3ت");
+  assert.deepEqual(points("بت", patterns), [[1, 4]]);
+  assert.deepEqual(points("بتن", patterns), [[1, 5]]);
+  assert.deepEqual(points("بتنن", patterns), [[1, 6]]);
+  assert.deepEqual(points("بتننن", patterns), [[1, 5]]);
+  assert.deepEqual(points("بتننننن", patterns), [[1, 3]]);
+});
+
+test("folds joining groups by positional rasm", () => {
+  const patterns = compilePatternText("@Beh 5 ت");
+  assert.deepEqual(points("بت", patterns), [[1, 5]]);
+  assert.deepEqual(points("نت", patterns), [[1, 5]]);
+  assert.deepEqual(points("بنت", patterns), [[2, 5]]);
+  assert.deepEqual(points("صت", patterns), []);
+});
+
+test("exact group references do not fold", () => {
+  const patterns = compilePatternText("=Beh 5 ت");
+  assert.deepEqual(points("بت", patterns), [[1, 5]]);
+  assert.deepEqual(points("نت", patterns), []);
+});
+
+test("simple patterns reproduce the Microsoft-style priorities", () => {
+  assert.deepEqual(builtin("simple", "سـلام"), [[1, 8], [2, 9]]);
+  assert.deepEqual(builtin("simple", "سلام"), [[1, 8]]);
+  assert.deepEqual(builtin("simple", "بدر"), [[1, 7]]);
+  assert.deepEqual(builtin("simple", "با"), [[1, 6]]);
+  assert.deepEqual(builtin("simple", "عبر"), [[1, 5], [2, 3]]);
+  assert.deepEqual(builtin("simple", "بو"), [[1, 4]]);
+  assert.deepEqual(builtin("simple", "تم"), [[1, 3]]);
+});
+
+test("built-ins suppress lam-alef", () => {
+  assert.deepEqual(builtin("simple", "لا"), []);
+  assert.deepEqual(builtin("naskh", "لا"), []);
+});
+
+test("naskh implements its priority matrix", () => {
+  assert.deepEqual(builtin("naskh", "بط"), [[1, 7]]);
+  assert.deepEqual(builtin("naskh", "مبط"), [[2, 8]]);
+  assert.deepEqual(builtin("naskh", "ممبط"), [[1, 3], [3, 9]]);
+  assert.deepEqual(builtin("naskh", "مممبط"), [[1, 2], [2, 2], [4, 8]]);
+  assert.deepEqual(builtin("naskh", "بحه"), [[2, 9]]);
+  assert.deepEqual(builtin("naskh", "سعي"), []);
+});
+
+test("nastaliq applies its naskh overrides", () => {
+  assert.deepEqual(builtin("naskh", "يهتم"), [[1, 6], [2, 6], [3, 6]]);
+  assert.deepEqual(builtin("nastaliq", "يهتم"), [[2, 6], [3, 6]]);
+  assert.deepEqual(builtin("naskh", "سقتم"), [[1, 3], [3, 6]]);
+  assert.deepEqual(builtin("nastaliq", "سقتم"), [[3, 6]]);
 });

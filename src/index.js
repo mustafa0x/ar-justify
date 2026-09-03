@@ -1,3 +1,5 @@
+import { builtinPatternSet, findKashidaPoints } from "./raqim.js";
+
 const CACHE_LIMIT = 4096;
 const caches = new WeakMap();
 const STYLE_PROPERTIES = [
@@ -92,245 +94,12 @@ function measureTexts(element, styles, texts) {
 
 const MARKER = "data-ar-justify-kashida";
 const TATWEEL = "ـ";
-const MAX_TATWEELS_PER_WORD = 6;
+const MAX_TATWEELS_PER_POINT = 6;
 const TATWEELS = Array.from(
-  { length: MAX_TATWEELS_PER_WORD + 1 },
+  { length: MAX_TATWEELS_PER_POINT + 1 },
   (_, count) => TATWEEL.repeat(count),
 );
-const ZWNJ = "‌";
-const ZWJ = "‍";
-const segmenter = new Intl.Segmenter("ar", { granularity: "grapheme" });
 const controllers = new WeakMap();
-
-const arabicScript = /\p{Script_Extensions=Arabic}/u;
-const letter = /\p{Letter}/u;
-const mark = /\p{Mark}/u;
-const format = /\p{Cf}/u;
-
-// Joining masks derived from Unicode 17.0 DerivedJoiningType.txt.
-// 1: joins the preceding character, 2: joins the following character.
-const joiningRanges = [
-  [0x0620, 0x0620, 3],
-  [0x0622, 0x0625, 1],
-  [0x0626, 0x0626, 3],
-  [0x0627, 0x0627, 1],
-  [0x0628, 0x0628, 3],
-  [0x0629, 0x0629, 1],
-  [0x062a, 0x062e, 3],
-  [0x062f, 0x0632, 1],
-  [0x0633, 0x063f, 3],
-  [0x0640, 0x0640, 3],
-  [0x0641, 0x0647, 3],
-  [0x0648, 0x0648, 1],
-  [0x0649, 0x064a, 3],
-  [0x066e, 0x066f, 3],
-  [0x0671, 0x0673, 1],
-  [0x0675, 0x0677, 1],
-  [0x0678, 0x0687, 3],
-  [0x0688, 0x0699, 1],
-  [0x069a, 0x06bf, 3],
-  [0x06c0, 0x06c0, 1],
-  [0x06c1, 0x06c2, 3],
-  [0x06c3, 0x06cb, 1],
-  [0x06cc, 0x06cc, 3],
-  [0x06cd, 0x06cd, 1],
-  [0x06ce, 0x06ce, 3],
-  [0x06cf, 0x06cf, 1],
-  [0x06d0, 0x06d1, 3],
-  [0x06d2, 0x06d3, 1],
-  [0x06d5, 0x06d5, 1],
-  [0x06ee, 0x06ef, 1],
-  [0x06fa, 0x06fc, 3],
-  [0x06ff, 0x06ff, 3],
-  [0x0750, 0x0758, 3],
-  [0x0759, 0x075b, 1],
-  [0x075c, 0x076a, 3],
-  [0x076b, 0x076c, 1],
-  [0x076d, 0x0770, 3],
-  [0x0771, 0x0771, 1],
-  [0x0772, 0x0772, 3],
-  [0x0773, 0x0774, 1],
-  [0x0775, 0x0777, 3],
-  [0x0778, 0x0779, 1],
-  [0x077a, 0x077f, 3],
-  [0x0870, 0x0882, 1],
-  [0x0883, 0x0886, 3],
-  [0x0889, 0x088d, 3],
-  [0x088e, 0x088e, 1],
-  [0x088f, 0x088f, 3],
-  [0x08a0, 0x08a9, 3],
-  [0x08aa, 0x08ac, 1],
-  [0x08ae, 0x08ae, 1],
-  [0x08af, 0x08b0, 3],
-  [0x08b1, 0x08b2, 1],
-  [0x08b3, 0x08b8, 3],
-  [0x08b9, 0x08b9, 1],
-  [0x08ba, 0x08c8, 3],
-  [0x10ec2, 0x10ec2, 1],
-  [0x10ec3, 0x10ec4, 3],
-  [0x10ec6, 0x10ec7, 3],
-  [0x200d, 0x200d, 3],
-];
-
-// The project's seven-level placement table. Other connecting letters fall
-// through to priority 7.
-const priority2 = new Set("سص");
-const priority3 = new Set("ةهد");
-const priority4 = new Set("اآأإٱطلكکگ");
-const priority5 = new Set("ريىی");
-const priority6 = new Set("وعقف");
-const alefs = new Set("اآأإٱ");
-
-function joiningMask(codePoint) {
-  let low = 0;
-  let high = joiningRanges.length - 1;
-
-  while (low <= high) {
-    const middle = (low + high) >> 1;
-    const [start, end, mask] = joiningRanges[middle];
-    if (codePoint < start) high = middle - 1;
-    else if (codePoint > end) low = middle + 1;
-    else return mask;
-  }
-
-  return 0;
-}
-
-function edgeMask(text, fromEnd) {
-  const characters = [...text];
-  if (fromEnd) characters.reverse();
-
-  for (const character of characters) {
-    if (character === ZWNJ) return 0;
-    const mask = joiningMask(character.codePointAt(0));
-    if (mask) return mask;
-    if (mark.test(character) || format.test(character)) continue;
-    return 0;
-  }
-
-  return 0;
-}
-
-function baseCharacter(text) {
-  return [...text].find(
-    (character) =>
-      character === TATWEEL ||
-      (letter.test(character) && arabicScript.test(character)),
-  );
-}
-
-function isArabicWordCluster(cluster) {
-  return [...cluster].some(
-    (character) =>
-      character === TATWEEL ||
-      character === ZWNJ ||
-      character === ZWJ ||
-      (letter.test(character) && arabicScript.test(character)),
-  );
-}
-
-function segment(text) {
-  return [...segmenter.segment(text)].map(({ segment: value, index }) => ({
-    value,
-    start: index,
-    end: index + value.length,
-    base: baseCharacter(value),
-  }));
-}
-
-function getWords(clusters, text) {
-  const words = [];
-  let start = 0;
-
-  while (start < clusters.length) {
-    if (!isArabicWordCluster(clusters[start].value)) {
-      start++;
-      continue;
-    }
-
-    let end = start + 1;
-    while (end < clusters.length && isArabicWordCluster(clusters[end].value)) {
-      end++;
-    }
-
-    const first = clusters[start];
-    const last = clusters[end - 1];
-    words.push({
-      clusters: clusters.slice(start, end),
-      start: first.start,
-      end: last.end,
-      text: text.slice(first.start, last.end),
-    });
-    start = end;
-  }
-
-  return words;
-}
-
-function joins(left, right) {
-  return Boolean(
-    (edgeMask(left.value, true) & 2) &&
-      (edgeMask(right.value, false) & 1),
-  );
-}
-
-function form(joinedBefore, joinedAfter) {
-  if (joinedBefore && joinedAfter) return "medial";
-  if (joinedBefore) return "final";
-  if (joinedAfter) return "initial";
-  return "isolated";
-}
-
-function getOpportunities(word) {
-  const { clusters } = word;
-  const boundaries = clusters.slice(0, -1).map((cluster, index) =>
-    joins(cluster, clusters[index + 1]),
-  );
-  const forms = clusters.map((_, index) =>
-    form(boundaries[index - 1] || false, boundaries[index] || false),
-  );
-  const opportunities = [];
-
-  for (let index = 0; index < boundaries.length; index++) {
-    if (!boundaries[index]) continue;
-
-    const left = clusters[index];
-    const right = clusters[index + 1];
-    if (!left.base || !right.base) continue;
-    if (left.base === "ل" && alefs.has(right.base)) continue;
-
-    let priority;
-    let offset = left.end;
-    if (left.value.includes(TATWEEL)) priority = 1;
-    else if (priority2.has(left.base) && ["initial", "medial"].includes(forms[index])) {
-      priority = 2;
-    } else if (priority3.has(right.base) && forms[index + 1] === "final") {
-      priority = 3;
-    } else if (priority4.has(right.base) && forms[index + 1] === "final") {
-      priority = 4;
-    } else if (
-      left.base === "ب" &&
-      forms[index] === "medial" &&
-      priority5.has(right.base) &&
-      forms[index + 1] === "final"
-    ) {
-      priority = 5;
-      offset = clusters[index - 1].end;
-    } else if (priority6.has(right.base) && forms[index + 1] === "final") {
-      priority = 6;
-    } else if (forms[index + 1] === "final") {
-      priority = 7;
-    } else {
-      continue;
-    }
-
-    opportunities.push({ offset, priority });
-  }
-
-  return opportunities.sort(
-    (left, right) => left.priority - right.priority || right.offset - left.offset,
-  );
-}
 
 function getTokens(text) {
   return [...text.matchAll(/\S+/gu)].map((match) => ({
@@ -339,29 +108,28 @@ function getTokens(text) {
   }));
 }
 
-function analyze(text) {
-  const clusters = segment(text);
+function analyze(text, style) {
   const tokens = getTokens(text);
   const candidates = [];
   let tokenIndex = 0;
 
-  for (const word of getWords(clusters, text)) {
-    while (tokens[tokenIndex]?.end <= word.start) tokenIndex++;
+  for (const point of findKashidaPoints(text, builtinPatternSet(style))) {
+    while (tokens[tokenIndex]?.end <= point.offset) tokenIndex++;
     const token = tokens[tokenIndex];
-    if (!token || token.start > word.start || token.end < word.end) continue;
+    if (!token || point.offset <= token.start || point.offset >= token.end) {
+      continue;
+    }
 
-    const opportunity = getOpportunities(word)[0];
-    if (!opportunity) continue;
-
-    const relativeOffset = opportunity.offset - word.start;
+    const word = text.slice(token.start, token.end);
+    const relativeOffset = point.offset - token.start;
     candidates.push({
-      ...opportunity,
+      ...point,
       tokenIndex,
       variants: TATWEELS.map(
         (tatweels) =>
-          word.text.slice(0, relativeOffset) +
+          word.slice(0, relativeOffset) +
           tatweels +
-          word.text.slice(relativeOffset),
+          word.slice(relativeOffset),
       ),
     });
   }
@@ -531,12 +299,22 @@ function sameLines(before, after) {
   );
 }
 
+function normalizeStyle(style = "simple") {
+  if (!["simple", "naskh", "nastaliq"].includes(style)) {
+    throw new TypeError('style must be "simple", "naskh", or "nastaliq"');
+  }
+  return style;
+}
+
 function normalizeOptions(options = {}) {
   if (!options || typeof options !== "object") {
     throw new TypeError("justifyArabic options must be an object");
   }
 
-  return { justifyLastLine: Boolean(options.justifyLastLine) };
+  return {
+    justifyLastLine: Boolean(options.justifyLastLine),
+    style: normalizeStyle(options.style),
+  };
 }
 
 export function justifyArabic(element, options) {
@@ -556,6 +334,7 @@ export function justifyArabic(element, options) {
   const hadStyleAttribute = element.hasAttribute("style");
   let destroyed = false;
   let analyzedText;
+  let analyzedStyle;
   let analysis;
 
   const controller = {
@@ -569,15 +348,16 @@ export function justifyArabic(element, options) {
       try {
         if (!text.trim()) return;
 
-        if (text !== analyzedText) {
+        const { justifyLastLine, style } = record.options;
+        if (text !== analyzedText || style !== analyzedStyle) {
           analyzedText = text;
-          analysis = analyze(text);
+          analyzedStyle = style;
+          analysis = analyze(text, style);
         }
 
         const styles = getComputedStyle(element);
         const widthLimit = contentWidth(element, styles);
         const natural = detectLines(element, analysis.tokens);
-        const { justifyLastLine } = record.options;
 
         if (
           natural.lines.length < (justifyLastLine ? 1 : 2) ||
@@ -610,10 +390,12 @@ export function justifyArabic(element, options) {
           let width = line.right - line.left;
           line.candidates.sort(
             (left, right) =>
-              left.priority - right.priority || right.offset - left.offset,
+              right.priority - left.priority || right.offset - left.offset,
           );
 
-          for (let round = 1; round <= MAX_TATWEELS_PER_WORD; round++) {
+          // Spread elongation across connections, preferring stronger points
+          // before weaker ones within each round.
+          for (let round = 1; round <= MAX_TATWEELS_PER_POINT; round++) {
             for (const candidate of line.candidates) {
               if (candidate.count !== round - 1) continue;
               const previousWidth = widths.get(candidate.variants[candidate.count]);
@@ -680,20 +462,38 @@ function restoreProperty(style, name, value, priority) {
   else style.removeProperty(name);
 }
 
-export function layoutArabicPoem(
-  poem,
-  { gutterEm = 2.5, stretchEm = 0.25, observe = true } = {},
-) {
+function normalizePoemOptions(options = {}) {
+  if (!options || typeof options !== "object") {
+    throw new TypeError("layoutArabicPoem options must be an object");
+  }
+  const {
+    gutterEm = 2.5,
+    stretchEm = 0.25,
+    observe = true,
+    style,
+  } = options;
+  return { gutterEm, stretchEm, observe, style: normalizeStyle(style) };
+}
+
+export function layoutArabicPoem(poem, options) {
   if (!(poem instanceof Element)) {
     throw new TypeError("layoutArabicPoem expects an Element");
   }
-
   const existing = poems.get(poem);
   if (existing) {
-    existing.refresh();
-    return existing;
+    if (options !== undefined) {
+      existing.options = normalizePoemOptions(options);
+      existing.syncObserver();
+    }
+    existing.controller.refresh();
+    return existing.controller;
   }
 
+  const record = {
+    options: normalizePoemOptions(options),
+    controller: null,
+    syncObserver: null,
+  };
   const original = {
     layout: poem.getAttribute("data-layout"),
     columnWidth: poem.style.getPropertyValue("--ar-poem-column-width"),
@@ -734,6 +534,7 @@ export function layoutArabicPoem(
   function refresh(force) {
     if (destroyed) return;
 
+    const { gutterEm, stretchEm, style } = record.options;
     const hemistichs = [...poem.querySelectorAll(SHATR)];
     if (!hemistichs.length) {
       setStacked();
@@ -776,12 +577,12 @@ export function layoutArabicPoem(
       const sameElements =
         controllerElements.length === hemistichs.length &&
         controllerElements.every((element, index) => element === hemistichs[index]);
-      const nextRenderKey = `${columnWidth}\0${typographyKey(styles)}\0${texts.join("\0")}`;
+      const nextRenderKey = `${style}\0${columnWidth}\0${typographyKey(styles)}\0${texts.join("\0")}`;
 
       if (!sameElements) clearControllers();
       if (force || !sameElements || renderKey !== nextRenderKey) {
         controllers = hemistichs.map((element) =>
-          justifyArabic(element, { justifyLastLine: true }),
+          justifyArabic(element, { justifyLastLine: true, style }),
         );
         controllerElements = hemistichs;
         renderKey = nextRenderKey;
@@ -861,8 +662,16 @@ export function layoutArabicPoem(
     });
   }
 
-  poems.set(poem, controller);
-  if (observe && "ResizeObserver" in window) {
+  record.controller = controller;
+  record.syncObserver = () => {
+    if (!record.options.observe || !("ResizeObserver" in window)) {
+      observer?.disconnect();
+      observer = undefined;
+      observedWidth = undefined;
+      return;
+    }
+    if (observer) return;
+
     observer = new ResizeObserver(([entry]) => {
       const width = entry.contentRect.width;
       if (observedWidth !== undefined && Math.abs(width - observedWidth) < 0.5) {
@@ -873,7 +682,9 @@ export function layoutArabicPoem(
     });
     observedWidth = resizeTarget.getBoundingClientRect().width;
     observer.observe(resizeTarget);
-  }
+  };
+  poems.set(poem, record);
+  record.syncObserver();
   poem.ownerDocument.fonts?.ready.then(() => scheduleRefresh(true));
   refresh(true);
   return controller;
