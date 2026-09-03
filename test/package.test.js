@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { justifyArabic, layoutArabicPoem } from "../src/index.js";
+import * as api from "../src/index.js";
 
 test("exports the public API", () => {
-  assert.equal(typeof justifyArabic, "function");
-  assert.equal(typeof layoutArabicPoem, "function");
+  assert.deepEqual(Object.keys(api), ["justifyArabic", "layoutArabicPoem"]);
+  assert.equal(typeof api.justifyArabic, "function");
+  assert.equal(typeof api.layoutArabicPoem, "function");
 });
