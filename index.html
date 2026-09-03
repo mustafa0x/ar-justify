@@ -1271,8 +1271,7 @@
             const paragraph = document.createElement("p");
             paragraph.append(value);
             preview.append(paragraph);
-            controllers = [justifyArabic(paragraph, { justifyLastLine: true, style })];
-            paragraph.style.textAlignLast = "justify";
+            controllers = [justifyArabic(paragraph, { style })];
           }
 
           const markerTotal = preview.querySelectorAll("[data-ar-justify-kashida]").length;
