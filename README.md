@@ -6,7 +6,7 @@ A small, dependency-free browser library for Arabic kashida justification. It su
 
 [Try the live Arabic text justifier](https://mustafa0x.github.io/ar-justify/) with prose, poetry, or any plain text.
 
-For the background—from manuscript practice and mechanized composition through Microsoft Word, Internet Explorer, early CSS proposals, and the modern browser gap—see [A history of Arabic text justification](HISTORY.md).
+For the background—from manuscript practice and mechanized composition through Microsoft Word, Internet Explorer, early CSS proposals, and the modern browser gap—see [A history of Arabic text justification](HISTORY.md). For a path toward browser support, see [A proposal for native Arabic justification on the Web](PROPOSAL.md).
 
 ## Install
 
