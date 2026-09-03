@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="description" content="Paste Arabic poetry and justify paired hemistichs with kashidas.">
-    <title>Arabic Poetry Justifier</title>
+    <meta name="description" content="Paste Arabic text and justify it with kashidas.">
+    <title>Arabic Text Justifier</title>
     <link rel="stylesheet" href="./src/style.css">
     <style>
       @font-face {
@@ -27,7 +27,7 @@
         --accent-soft: #f2ddd2;
         --success: #4d6a4a;
         --stage-width: 900px;
-        --poem-size: 32px;
+        --text-size: 32px;
       }
 
       * {
@@ -193,14 +193,14 @@
       }
 
       .hint,
-      .verse-count {
+      .character-count {
         margin: 0;
         color: var(--muted);
         font-size: 12px;
         line-height: 1.5;
       }
 
-      .poem-input {
+      .text-input {
         display: block;
         width: 100%;
         min-height: 492px;
@@ -218,11 +218,11 @@
         box-shadow: 0 12px 30px rgb(51 39 24 / 0.06);
       }
 
-      .poem-input:hover {
+      .text-input:hover {
         border-color: var(--line-strong);
       }
 
-      .poem-input[aria-invalid="true"] {
+      .text-input[aria-invalid="true"] {
         border-color: var(--accent);
       }
 
@@ -250,21 +250,6 @@
         color: var(--ink);
       }
 
-      .error {
-        margin: 14px 0 0;
-        padding: 10px 12px;
-        border: 1px solid #c98b75;
-        border-radius: 6px;
-        color: #74311e;
-        background: #f8e8df;
-        font-size: 12px;
-        line-height: 1.5;
-      }
-
-      .error[hidden] {
-        display: none;
-      }
-
       .layout-status {
         display: inline-flex;
         align-items: center;
@@ -281,12 +266,8 @@
         background: var(--line-strong);
       }
 
-      .layout-status[data-layout="paired"] .status-dot {
+      .layout-status[data-state="ready"] .status-dot {
         background: var(--success);
-      }
-
-      .layout-status[data-layout="stacked"] .status-dot {
-        background: var(--accent);
       }
 
       .controls {
@@ -398,28 +379,19 @@
         box-shadow: 0 22px 54px rgb(51 39 24 / 0.09);
       }
 
-      [data-ar-poem] {
+      .justified-text {
         font-family: "Kitab", "Traditional Arabic", serif;
-        font-size: var(--poem-size);
-        line-height: 2;
+        font-size: var(--text-size);
+        line-height: 1.9;
       }
 
-      [data-ar-poem] [data-bayt] + [data-bayt] {
-        margin-top: 0.12em;
+      .justified-text p {
+        margin: 0;
+        white-space: pre-wrap;
       }
 
-      [data-ar-poem][data-layout="stacked"] {
-        max-width: 31em;
-        margin-inline: auto;
-      }
-
-      [data-ar-poem][data-layout="stacked"] [data-bayt] + [data-bayt] {
-        margin-top: 0.72em;
-      }
-
-      [data-ar-poem][data-layout="stacked"] [data-ajz] {
-        margin-top: 0.08em;
-        padding-inline-start: 1.1em;
+      .justified-text p + p {
+        margin-top: 0.9em;
       }
 
       .show-markers [data-ar-justify-kashida]::before {
@@ -480,7 +452,7 @@
           padding-left: 0;
         }
 
-        .poem-input {
+        .text-input {
           min-height: 280px;
         }
       }
@@ -510,7 +482,7 @@
           min-height: 0;
         }
 
-        .poem-input {
+        .text-input {
           padding: 16px;
           font-size: 19px;
         }
@@ -541,8 +513,8 @@
           padding: 28px 16px;
         }
 
-        [data-ar-poem] {
-          line-height: 1.8;
+        .justified-text {
+          line-height: 1.75;
         }
       }
 
@@ -561,23 +533,23 @@
 
     <main class="shell">
       <section class="intro" aria-labelledby="page-title">
-        <h1 id="page-title">Justify Arabic poetry.</h1>
-        <p class="lede">Enter one verse per line with <code>::</code> between its two hemistichs. The preview measures every line, adds kashidas where needed, and stacks gracefully when paired columns no longer fit.</p>
+        <h1 id="page-title">Justify Arabic text.</h1>
+        <p class="lede">Paste or type Arabic prose, poetry, or any plain text. Paragraph breaks and punctuation stay intact while the preview adds kashidas to fit each line.</p>
       </section>
 
       <div class="workbench">
         <section class="editor" aria-labelledby="input-title">
           <div class="section-head">
-            <h2 id="input-title">Poem text</h2>
-            <p class="hint" id="input-help">One verse per line · first half <code>::</code> second half</p>
+            <h2 id="input-title">Source text</h2>
+            <p class="hint" id="input-help">Plain text · blank lines create paragraphs</p>
           </div>
 
           <textarea
-            class="poem-input"
-            id="poem-input"
+            class="text-input"
+            id="text-input"
             lang="ar"
             dir="rtl"
-            aria-describedby="input-help input-error"
+            aria-describedby="input-help"
             spellcheck="false"
           >عَجِبتُ لِمَن لَهُ قَدٌّ وَحَدٌّ  :: وَيَنبو نَبوَةَ القَضِمِ الكَهامِ
 
@@ -586,18 +558,17 @@
 وَلَم أَرَ في عُيوبِ الناسِ شَيئاً  :: كَنَقصِ القادِرينَ عَلى التَمامِ</textarea>
 
           <div class="editor-meta">
-            <p class="verse-count" id="verse-count" aria-live="polite">3 verses</p>
+            <p class="character-count" id="character-count" aria-live="polite">0 characters</p>
             <button class="text-button" id="restore-sample" type="button">Restore sample</button>
           </div>
-          <p class="error" id="input-error" role="alert" hidden></p>
         </section>
 
         <section class="preview" aria-labelledby="preview-title">
           <div class="preview-head">
             <h2 id="preview-title">Justified preview</h2>
-            <div class="layout-status" id="layout-status" data-layout="measuring" aria-live="polite">
+            <div class="layout-status" id="layout-status" data-state="measuring" aria-live="polite">
               <span class="status-dot" aria-hidden="true"></span>
-              <span id="layout-label">Measuring…</span>
+              <span id="layout-label">Justifying…</span>
             </div>
           </div>
 
@@ -612,11 +583,6 @@
               <input id="size" type="range" min="20" max="44" step="1" value="32">
               <output id="size-output" for="size">32 px</output>
             </div>
-            <div class="control">
-              <label for="gutter">Gutter</label>
-              <input id="gutter" type="range" min="1.2" max="4.5" step="0.1" value="2.5">
-              <output id="gutter-output" for="gutter">2.5 em</output>
-            </div>
             <label class="marker-toggle">
               <input id="markers" type="checkbox">
               Show kashidas
@@ -624,17 +590,14 @@
             <button class="copy-button" id="copy" type="button">Copy text</button>
           </div>
 
-          <div class="metrics" aria-label="Layout measurements">
-            <span class="metric" id="available-metric">Available —</span>
-            <span class="metric" id="required-metric">Pair needs —</span>
-            <span class="metric" id="column-metric">Column —</span>
+          <div class="metrics" aria-live="polite">
             <span class="metric" id="marker-metric">0 kashidas</span>
           </div>
 
           <div class="stage-scroll">
             <article class="stage" id="stage" lang="ar" dir="rtl">
-              <div id="poem" data-ar-poem data-layout="stacked"></div>
-              <div class="empty" id="empty-state" hidden>Enter a verse to begin.</div>
+              <div class="justified-text" id="justified-text"></div>
+              <div class="empty" id="empty-state" hidden>Enter text to begin.</div>
             </article>
           </div>
         </section>
@@ -644,114 +607,72 @@
     <footer class="shell">Kashidas are visual markers only. Copied text remains exactly as entered.</footer>
 
     <script type="module">
-      import { layoutArabicPoem } from "./src/index.js";
+      import { justifyArabic } from "./src/index.js";
 
       const root = document.documentElement;
-      const input = document.querySelector("#poem-input");
-      const poem = document.querySelector("#poem");
-      const error = document.querySelector("#input-error");
+      const input = document.querySelector("#text-input");
+      const preview = document.querySelector("#justified-text");
       const empty = document.querySelector("#empty-state");
-      const verseCount = document.querySelector("#verse-count");
+      const characterCount = document.querySelector("#character-count");
       const copy = document.querySelector("#copy");
       const layoutStatus = document.querySelector("#layout-status");
       const layoutLabel = document.querySelector("#layout-label");
       const width = document.querySelector("#width");
       const size = document.querySelector("#size");
-      const gutter = document.querySelector("#gutter");
       const sample = input.value;
       const outputs = {
         width: document.querySelector("#width-output"),
         size: document.querySelector("#size-output"),
-        gutter: document.querySelector("#gutter-output"),
-        available: document.querySelector("#available-metric"),
-        required: document.querySelector("#required-metric"),
-        column: document.querySelector("#column-metric"),
         markers: document.querySelector("#marker-metric"),
       };
-      let controller;
+      let controllers = [];
       let frame;
 
-      function parsePoem(value) {
-        const lines = value
-          .split("\n")
-          .map((line, index) => ({ line: line.trim(), number: index + 1 }))
-          .filter(({ line }) => line);
-        const verses = [];
-
-        for (const { line, number } of lines) {
-          const separator = line.indexOf("::");
-          if (separator < 0) {
-            return { error: `Line ${number} needs :: between its two halves.`, verses: [] };
-          }
-
-          const sadr = line.slice(0, separator).trim();
-          const ajz = line.slice(separator + 2).trim();
-          if (!sadr || !ajz) {
-            return { error: `Line ${number} needs text on both sides of ::.`, verses: [] };
-          }
-
-          verses.push({ sadr, ajz });
-        }
-
-        return { error: "", verses };
+      function updateStatus() {
+        const markers = preview.querySelectorAll("[data-ar-justify-kashida]").length;
+        layoutStatus.dataset.state = "ready";
+        layoutLabel.textContent = "Justified";
+        outputs.markers.textContent = `${markers} kashida${markers === 1 ? "" : "s"}`;
       }
 
-      function updateMetrics(metrics) {
-        layoutStatus.dataset.layout = metrics.layout;
-        layoutLabel.textContent = metrics.layout === "paired" ? "Paired columns" : "Stacked verses";
-        outputs.available.textContent = `Available ${Math.round(metrics.availableWidth)} px`;
-        outputs.required.textContent = `Pair needs ${Math.round(metrics.requiredWidth)} px`;
-        outputs.column.textContent = `Column ${Math.round(metrics.columnWidth)} px`;
-        outputs.markers.textContent = `${metrics.markers} kashida${metrics.markers === 1 ? "" : "s"}`;
-      }
-
-      function clearMetrics() {
-        layoutStatus.dataset.layout = "empty";
+      function clearStatus() {
+        layoutStatus.dataset.state = "empty";
         layoutLabel.textContent = "Waiting for text";
-        outputs.available.textContent = "Available —";
-        outputs.required.textContent = "Pair needs —";
-        outputs.column.textContent = "Column —";
         outputs.markers.textContent = "0 kashidas";
       }
 
       function rebuild() {
         frame = undefined;
-        controller?.destroy();
-        controller = undefined;
+        controllers.forEach((controller) => controller.destroy());
+        controllers = [];
+        preview.replaceChildren();
 
-        const parsed = parsePoem(input.value);
-        error.hidden = !parsed.error;
-        error.textContent = parsed.error;
-        input.setAttribute("aria-invalid", String(Boolean(parsed.error)));
-        verseCount.textContent = `${parsed.verses.length} verse${parsed.verses.length === 1 ? "" : "s"}`;
-        copy.disabled = !input.value.trim();
-        poem.replaceChildren();
+        const value = input.value;
+        const count = [...value].length;
+        characterCount.textContent = `${count} character${count === 1 ? "" : "s"}`;
+        copy.disabled = !value.trim();
 
-        if (parsed.error || !parsed.verses.length) {
-          poem.hidden = true;
+        if (!value.trim()) {
+          preview.hidden = true;
           empty.hidden = false;
-          empty.textContent = parsed.error ? "Correct the marked line to update the preview." : "Enter a verse to begin.";
-          clearMetrics();
+          clearStatus();
           return;
         }
 
-        for (const verse of parsed.verses) {
-          const bayt = document.createElement("div");
-          const sadr = document.createElement("span");
-          const ajz = document.createElement("span");
-          bayt.dataset.bayt = "";
-          sadr.dataset.sadr = "";
-          ajz.dataset.ajz = "";
-          sadr.textContent = verse.sadr;
-          ajz.textContent = verse.ajz;
-          bayt.append(sadr, ajz);
-          poem.append(bayt);
+        const paragraphs = value
+          .split(/\n(?:[ \t]*\n)+/)
+          .filter((paragraph) => paragraph.trim());
+
+        for (const text of paragraphs) {
+          const paragraph = document.createElement("p");
+          paragraph.textContent = text;
+          preview.append(paragraph);
+          controllers.push(justifyArabic(paragraph, { justifyLastLine: true }));
         }
 
-        poem.hidden = false;
+        preview.hidden = false;
         empty.hidden = true;
-        controller = layoutArabicPoem(poem, { gutterEm: Number(gutter.value) });
-        updateMetrics(controller.metrics);
+        updateStatus();
       }
 
       function scheduleRebuild() {
@@ -761,16 +682,14 @@
 
       function updateControls() {
         root.style.setProperty("--stage-width", `${width.value}px`);
-        root.style.setProperty("--poem-size", `${size.value}px`);
+        root.style.setProperty("--text-size", `${size.value}px`);
         outputs.width.value = `${width.value} px`;
         outputs.size.value = `${size.value} px`;
-        outputs.gutter.value = `${Number(gutter.value).toFixed(1)} em`;
         scheduleRebuild();
       }
 
-      poem.addEventListener("ar-poem-layout", (event) => updateMetrics(event.detail));
       input.addEventListener("input", scheduleRebuild);
-      [width, size, gutter].forEach((control) => control.addEventListener("input", updateControls));
+      [width, size].forEach((control) => control.addEventListener("input", updateControls));
       document.querySelector("#markers").addEventListener("change", (event) => {
         document.querySelector(".preview").classList.toggle("show-markers", event.target.checked);
       });
