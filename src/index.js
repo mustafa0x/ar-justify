@@ -217,11 +217,35 @@ function findLine(lines, top) {
   return -1;
 }
 
+function detectLineRects(element) {
+  const range = element.ownerDocument.createRange();
+  range.selectNodeContents(element);
+  return groupRects(range.getClientRects());
+}
+
+function tokenLineAssignment(range, spans, lines, token) {
+  const [startNode, startOffset] = pointAt(spans, token.start, true);
+  const [endNode, endOffset] = pointAt(spans, token.end, false);
+  range.setStart(startNode, startOffset);
+  range.setEnd(endNode, endOffset);
+
+  const indices = [];
+  for (const rect of range.getClientRects()) {
+    if (!rect.width || !rect.height) continue;
+    const index = findLine(lines, rect.top);
+    if (index >= 0 && indices.at(-1) !== index) indices.push(index);
+  }
+
+  return {
+    assignment: indices.join(","),
+    line: indices.length === 1 ? indices[0] : -1,
+  };
+}
+
 function detectLines(element, tokens) {
   const document = element.ownerDocument;
   const range = document.createRange();
-  range.selectNodeContents(element);
-  const lines = groupRects(range.getClientRects());
+  const lines = detectLineRects(element);
 
   if (lines.length <= 1) {
     return {
@@ -236,20 +260,14 @@ function detectLines(element, tokens) {
   const tokenLines = [];
 
   for (const token of tokens) {
-    const [startNode, startOffset] = pointAt(spans, token.start, true);
-    const [endNode, endOffset] = pointAt(spans, token.end, false);
-    range.setStart(startNode, startOffset);
-    range.setEnd(endNode, endOffset);
-
-    const indices = [];
-    for (const rect of range.getClientRects()) {
-      if (!rect.width || !rect.height) continue;
-      const index = findLine(lines, rect.top);
-      if (index >= 0 && indices.at(-1) !== index) indices.push(index);
-    }
-
-    assignments.push(indices.join(","));
-    tokenLines.push(indices.length === 1 ? indices[0] : -1);
+    const { assignment, line } = tokenLineAssignment(
+      range,
+      spans,
+      lines,
+      token,
+    );
+    assignments.push(assignment);
+    tokenLines.push(line);
   }
 
   return { lines, assignments, tokenLines };
@@ -290,13 +308,41 @@ function insertMarkers(element, text, counts) {
   element.replaceChildren(fragment);
 }
 
-function sameLines(before, after) {
-  return (
-    before.lines.length === after.lines.length &&
-    before.assignments.every(
-      (assignment, index) => assignment === after.assignments[index],
-    )
-  );
+function lineBoundaryTokenIndexes(assignments) {
+  // CSS line boxes partition inline content in logical order, so stable tokens
+  // on both sides of every boundary imply stable interior token assignments.
+  const indexes = new Set();
+  if (assignments.length) indexes.add(0);
+
+  for (let index = 0; index < assignments.length; index++) {
+    if (assignments[index].includes(",")) indexes.add(index);
+    if (index && assignments[index] !== assignments[index - 1]) {
+      indexes.add(index - 1);
+      indexes.add(index);
+    }
+  }
+
+  if (assignments.length) indexes.add(assignments.length - 1);
+  return indexes;
+}
+
+function sameLineBreaks(element, tokens, before) {
+  const lines = detectLineRects(element);
+  if (before.lines.length !== lines.length) return false;
+  if (lines.length <= 1) return true;
+
+  const range = element.ownerDocument.createRange();
+  const spans = textNodeSpans(element);
+  for (const index of lineBoundaryTokenIndexes(before.assignments)) {
+    const { assignment } = tokenLineAssignment(
+      range,
+      spans,
+      lines,
+      tokens[index],
+    );
+    if (assignment !== before.assignments[index]) return false;
+  }
+  return true;
 }
 
 function normalizeStyle(style = "simple") {
@@ -420,7 +466,7 @@ export function justifyArabic(element, options) {
         insertMarkers(element, text, counts);
         element.style.textAlign = "justify";
         if (
-          !sameLines(natural, detectLines(element, analysis.tokens)) ||
+          !sameLineBreaks(element, analysis.tokens, natural) ||
           element.scrollWidth > element.clientWidth + 1
         ) {
           element.textContent = text;

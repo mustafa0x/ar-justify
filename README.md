@@ -101,7 +101,7 @@ Set `observe: false` when the application owns refresh timing. The controller ex
 
 ## Performance
 
-Text analysis is reused while the source is unchanged. Widths are measured in batches, cached by typography, and cleared when fonts finish loading. The poetry observer coalesces resizes into one animation frame and skips refitting when its effective column width did not change.
+Text analysis is reused while the source is unchanged. Widths are measured in batches, cached by typography, and cleared when fonts finish loading. After marker insertion, line stability is rechecked at visual line boundaries instead of remeasuring every word. The poetry observer coalesces resizes into one animation frame and skips refitting when its effective column width did not change.
 
 For long readers, initialize only the rendered pages and call `refresh()` only after a real text, width, or typography change.
 
