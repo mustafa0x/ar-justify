@@ -22,6 +22,15 @@ function contentWidth(element, styles = getComputedStyle(element)) {
   );
 }
 
+function contentEdges(element, styles) {
+  const bounds = element.getBoundingClientRect();
+  const clientLeft = bounds.left + element.clientLeft;
+  return {
+    left: clientLeft + parseFloat(styles.paddingLeft),
+    right: clientLeft + element.clientWidth - parseFloat(styles.paddingRight),
+  };
+}
+
 function typographyKey(styles) {
   return STYLE_PROPERTIES.map((property) => styles[property]).join("\0");
 }
@@ -403,6 +412,7 @@ export function justifyArabic(element, options) {
 
         const styles = getComputedStyle(element);
         const widthLimit = contentWidth(element, styles);
+        const edges = contentEdges(element, styles);
         const natural = detectLines(element, analysis.tokens);
 
         if (
@@ -433,7 +443,10 @@ export function justifyArabic(element, options) {
           : natural.lines.slice(0, -1);
 
         for (const line of lines) {
-          let width = line.right - line.left;
+          let width =
+            styles.direction === "rtl"
+              ? edges.right - line.left
+              : line.right - edges.left;
           line.candidates.sort(
             (left, right) =>
               right.priority - left.priority || right.offset - left.offset,
