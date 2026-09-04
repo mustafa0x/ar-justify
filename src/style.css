@@ -1,8 +1,6 @@
 [data-ar-justify-kashida] {
   all: unset;
   display: inline;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 [data-ar-justify-kashida]::before {
