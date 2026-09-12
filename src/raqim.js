@@ -8,7 +8,10 @@ const DUAL_JOINING = 3;
 const JOIN_CAUSING = 4;
 const TRANSPARENT = 5;
 const TATWEEL = "ـ";
-const segmenter = new Intl.Segmenter("ar", { granularity: "grapheme" });
+const segmenter =
+  typeof Intl.Segmenter === "function"
+    ? new Intl.Segmenter("ar", { granularity: "grapheme" })
+    : null;
 
 const SIMPLE_PATTERNS = `
 3 * .
@@ -86,6 +89,7 @@ function isJoiningType(type) {
 }
 
 function splitGraphemes(text) {
+  if (!segmenter) return [];
   const graphemes = Array.from(segmenter.segment(text), ({ segment, index }) => {
     const characters = [...segment];
     const base = characters[0];

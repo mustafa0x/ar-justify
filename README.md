@@ -107,7 +107,7 @@ For long readers, initialize only the rendered pages and call `refresh()` only a
 
 ## Scope
 
-- Modern browsers with `Intl.Segmenter`; grapheme boundaries follow the browser's Unicode version
+- Modern browsers with `Intl.Segmenter`; grapheme boundaries follow the browser's Unicode version. Older browsers load safely and skip kashida insertion.
 - Pinned Unicode 17 joining data and Raqim's Arabic pattern sets
 - Horizontal, plain-text elements only
 - No dependencies, WASM, or build step
