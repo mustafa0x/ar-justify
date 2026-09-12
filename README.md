@@ -109,10 +109,10 @@ For long readers, initialize only the rendered pages and call `refresh()` only a
 
 - Modern browsers with `Intl.Segmenter`; grapheme boundaries follow the browser's Unicode version. Older browsers load safely and skip kashida insertion.
 - Pinned Unicode 17 joining data and Raqim's Arabic pattern sets
-- Horizontal, plain-text elements only
+- Horizontal, non-editable elements; existing inline markup is preserved
 - No dependencies, WASM, or build step
 - No document scanning or global mutation observer
-- No rich text or `contenteditable` support
+- No `contenteditable` support
 
 Visible elongations are rendered by empty, `aria-hidden` marker elements. They are not inserted into `textContent`, copied text, or the canonical source string.
 

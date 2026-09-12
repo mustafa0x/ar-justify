@@ -283,38 +283,24 @@ function detectLines(element, tokens) {
 }
 
 function removeMarkers(element) {
-  if (element.firstElementChild) element.textContent = element.textContent;
+  for (const marker of element.querySelectorAll(`[${MARKER}]`)) marker.remove();
+  element.normalize();
 }
 
-function assertPlainText(element) {
-  const invalid = [...element.childNodes].find(
-    (node) =>
-      node.nodeType !== Node.TEXT_NODE &&
-      !(node.nodeType === Node.ELEMENT_NODE && node.hasAttribute(MARKER)),
-  );
-  if (invalid) throw new TypeError("justifyArabic only supports plain-text elements");
-}
-
-function insertMarkers(element, text, counts) {
+function insertMarkers(element, counts) {
   if (!counts.size) return;
 
   const document = element.ownerDocument;
-  const fragment = document.createDocumentFragment();
-  let start = 0;
-
+  const spans = textNodeSpans(element);
   for (const [offset, count] of [...counts].sort(
-    ([left], [right]) => left - right,
+    ([left], [right]) => right - left,
   )) {
-    if (offset > start) fragment.append(text.slice(start, offset));
+    const [node, nodeOffset] = pointAt(spans, offset, true);
     const marker = document.createElement("span");
     marker.setAttribute(MARKER, TATWEELS[count]);
     marker.setAttribute("aria-hidden", "true");
-    fragment.append(marker);
-    start = offset;
+    node.splitText(nodeOffset).before(marker);
   }
-
-  if (start < text.length) fragment.append(text.slice(start));
-  element.replaceChildren(fragment);
 }
 
 function lineBoundaryTokenIndexes(assignments) {
@@ -395,7 +381,6 @@ export function justifyArabic(element, options) {
   const controller = {
     refresh() {
       if (destroyed) return;
-      assertPlainText(element);
       const text = element.textContent;
       removeMarkers(element);
       element.style.textAlign = "start";
@@ -476,13 +461,13 @@ export function justifyArabic(element, options) {
 
         if (!counts.size) return;
 
-        insertMarkers(element, text, counts);
+        insertMarkers(element, counts);
         element.style.textAlign = "justify";
         if (
           !sameLineBreaks(element, analysis.tokens, natural) ||
           element.scrollWidth > element.clientWidth + 1
         ) {
-          element.textContent = text;
+          removeMarkers(element);
         }
       } finally {
         element.style.textAlign = "justify";
