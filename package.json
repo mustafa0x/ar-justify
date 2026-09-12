@@ -1,6 +1,6 @@
 {
   "name": "ar-justify",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Kashida-based Arabic text and poetry justification for the browser",
   "repository": {
     "type": "git",
