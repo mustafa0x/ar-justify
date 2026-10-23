@@ -1,3 +1,4 @@
+import { groupRects, withoutRects } from "./lines.js";
 import { builtinPatternSet, findKashidaPoints } from "./raqim.js";
 
 const CACHE_LIMIT = 4096;
@@ -189,28 +190,6 @@ function pointAt(spans, offset, startPoint) {
   return [last.node, last.node.data.length];
 }
 
-function groupRects(rects) {
-  const lines = [];
-
-  for (const rect of rects) {
-    if (!rect.width || !rect.height) continue;
-    const line = lines.at(-1);
-    if (!line || Math.abs(line.top - rect.top) >= 1) {
-      lines.push({
-        top: rect.top,
-        left: rect.left,
-        right: rect.right,
-        candidates: [],
-      });
-    } else {
-      line.left = Math.min(line.left, rect.left);
-      line.right = Math.max(line.right, rect.right);
-    }
-  }
-
-  return lines;
-}
-
 function findLine(lines, top) {
   let low = 0;
   let high = lines.length - 1;
@@ -226,10 +205,15 @@ function findLine(lines, top) {
   return -1;
 }
 
+// Markers are left out: Firefox can size a marker's box differently from the
+// text around it, which would read as an extra line.
 function detectLineRects(element) {
   const range = element.ownerDocument.createRange();
   range.selectNodeContents(element);
-  return groupRects(range.getClientRects());
+  const markerRects = [...element.querySelectorAll(`[${MARKER}]`)].flatMap(
+    (marker) => [...marker.getClientRects()],
+  );
+  return groupRects(withoutRects(range.getClientRects(), markerRects));
 }
 
 function tokenLineAssignment(range, spans, lines, token) {
