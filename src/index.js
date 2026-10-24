@@ -1,4 +1,3 @@
-import { groupRects, withoutRects } from "./lines.js";
 import { builtinPatternSet, findKashidaPoints } from "./raqim.js";
 
 const CACHE_LIMIT = 4096;
@@ -190,6 +189,28 @@ function pointAt(spans, offset, startPoint) {
   return [last.node, last.node.data.length];
 }
 
+function groupRects(rects) {
+  const lines = [];
+
+  for (const rect of rects) {
+    if (!rect.width || !rect.height) continue;
+    const line = lines.at(-1);
+    if (!line || Math.abs(line.top - rect.top) >= 1) {
+      lines.push({
+        top: rect.top,
+        left: rect.left,
+        right: rect.right,
+        candidates: [],
+      });
+    } else {
+      line.left = Math.min(line.left, rect.left);
+      line.right = Math.max(line.right, rect.right);
+    }
+  }
+
+  return lines;
+}
+
 function findLine(lines, top) {
   let low = 0;
   let high = lines.length - 1;
@@ -210,10 +231,16 @@ function findLine(lines, top) {
 function detectLineRects(element) {
   const range = element.ownerDocument.createRange();
   range.selectNodeContents(element);
-  const markerRects = [...element.querySelectorAll(`[${MARKER}]`)].flatMap(
-    (marker) => [...marker.getClientRects()],
+  const rects = range.getClientRects();
+  const markers = [...element.querySelectorAll(`[${MARKER}]`)];
+  if (!markers.length) return groupRects(rects);
+
+  const rect_key = (rect) =>
+    `${rect.left},${rect.top},${rect.width},${rect.height}`;
+  const marker_rects = new Set(
+    markers.flatMap((marker) => [...marker.getClientRects()].map(rect_key)),
   );
-  return groupRects(withoutRects(range.getClientRects(), markerRects));
+  return groupRects([...rects].filter((rect) => !marker_rects.has(rect_key(rect))));
 }
 
 function tokenLineAssignment(range, spans, lines, token) {
